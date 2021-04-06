@@ -41,6 +41,10 @@ namespace abstractions {
         GLCall(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
     }
 
+    void Shader::SetUniform1f(const std::string &name, float v){
+        GLCall(glUniform1f(GetUniformLocation(name), v));
+    }
+
     int Shader::GetUniformLocation(const std::string &name) {
         if(m_UniformLocationCache.find(name) != m_UniformLocationCache.end())
             return m_UniformLocationCache[name];

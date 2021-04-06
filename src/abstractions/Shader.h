@@ -29,6 +29,7 @@ namespace abstractions {
         void SetUniform3f(const std::string& name, float v0, float v1, float f2);
         void SetUniform4f(const std::string& name, float v0, float v1, float f2, float f3);
         void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+        void SetUniform1f(const std::string &name, float v);
     private:
         int GetUniformLocation(const std::string& name);
 

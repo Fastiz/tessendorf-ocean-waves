@@ -41,7 +41,7 @@ void Ocean::OnRender(Camera& camera) {
     glm::vec3 cameraPos = camera.GetCameraPos();
     shader->SetUniform3f("viewPos", cameraPos[0], cameraPos[1], cameraPos[2]);
 
-    glm::vec3 lightPos = {0.0f, 40.0f, 0.0f};
+    glm::vec3 lightPos = {10.0f, 20.0f, 10.0f};
     shader->SetUniform3f("lightPos", lightPos[0], lightPos[1], lightPos[2]);
 
     glm::mat4 model = glm::mat4(1.0f);
@@ -51,24 +51,9 @@ void Ocean::OnRender(Camera& camera) {
     renderer.DrawArrays(*vao, *shader, 0, width * height * 2 * 3);
 }
 
-float sinusoid(float x, float z, float a, float b, float delta){
-    return std::sin(x + z + delta);
-}
-
 void Ocean::OnUpdate(double deltaTime) {
     elapsedTime += deltaTime;
 
-    float a = 100, b = 100;
-    std::function<float(float, float)> lambda = [&](float x, float z){
-        return sinusoid(x, z, a, b, (float) elapsedTime);
-    };
-
-    triangles = utils::transform_grid_height(triangles, lambda);
-    normals = utils::generate_triangle_normals(triangles);
-
-    std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles, normals);
-
-    vertexBuffer = std::make_unique<abstractions::VertexBuffer>(&vertices_buffer[0], vertices_buffer.size() * sizeof(float));
-
-    vao->AddBuffer(*vertexBuffer, *layout);
+    shader->Bind();
+    shader->SetUniform1f("elapsedTime", (float) elapsedTime);
 }

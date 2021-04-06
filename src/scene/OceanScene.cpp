@@ -7,7 +7,7 @@ OceanScene::OceanScene(): camera(), children() {
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 
-    children.push_back(std::make_unique<Ocean>(100, 100));
+    children.push_back(std::make_unique<Ocean>(512, 512));
 }
 
 void OceanScene::OnUpdate(double deltaTime) {
