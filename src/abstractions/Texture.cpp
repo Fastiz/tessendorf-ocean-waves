@@ -1,7 +1,7 @@
 #include "Texture.h"
 #include "Renderer.h"
+#include "../vendor/std_image/stb_image.h"
 
-#include "vendor/std_image/stb_image.h"
 
 namespace abstractions {
     Texture::Texture(const std::string &path)

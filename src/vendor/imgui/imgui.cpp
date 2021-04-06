@@ -3113,12 +3113,12 @@ bool ImGui::IsItemHovered(ImGuiHoveredFlags flags)
     if (g.NavDisableMouseHover && !g.NavDisableHighlight)
         return IsItemFocused();
 
-    // Scene for bounding box overlap, as updated as ItemAdd()
+    // Node for bounding box overlap, as updated as ItemAdd()
     if (!(window->DC.LastItemStatusFlags & ImGuiItemStatusFlags_HoveredRect))
         return false;
     IM_ASSERT((flags & (ImGuiHoveredFlags_RootWindow | ImGuiHoveredFlags_ChildWindows)) == 0);   // Flags not supported by this function
 
-    // Scene if we are hovering the right window (our window could be behind another window)
+    // Node if we are hovering the right window (our window could be behind another window)
     // [2017/10/16] Reverted commit 344d48be3 and testing RootWindow instead. I believe it is correct to NOT abstractions for RootWindow but this leaves us unable to use IsItemHovered() after EndChild() itself.
     // Until a solution is found I believe reverting to the abstractions from 2017/09/27 is safe since this was the abstractions that has been running for a long while.
     //if (g.HoveredWindow != window)
@@ -3126,17 +3126,17 @@ bool ImGui::IsItemHovered(ImGuiHoveredFlags flags)
     if (g.HoveredRootWindow != window->RootWindow && !(flags & ImGuiHoveredFlags_AllowWhenOverlapped))
         return false;
 
-    // Scene if another item is active (e.g. being dragged)
+    // Node if another item is active (e.g. being dragged)
     if (!(flags & ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
         if (g.ActiveId != 0 && g.ActiveId != window->DC.LastItemId && !g.ActiveIdAllowOverlap && g.ActiveId != window->MoveId)
             return false;
 
-    // Scene if interactions on this window are blocked by an active popup or modal.
+    // Node if interactions on this window are blocked by an active popup or modal.
     // The ImGuiHoveredFlags_AllowWhenBlockedByPopup flag will be tested here.
     if (!IsWindowContentHoverable(window, flags))
         return false;
 
-    // Scene if the item is disabled
+    // Node if the item is disabled
     if ((window->DC.ItemFlags & ImGuiItemFlags_Disabled) && !(flags & ImGuiHoveredFlags_AllowWhenDisabled))
         return false;
 
@@ -4536,7 +4536,7 @@ static void FindHoveredWindow()
     g.HoveredWindowUnderMovingWindow = hovered_window_ignoring_moving_window;
 }
 
-// Scene if mouse cursor is hovering given rectangle
+// Node if mouse cursor is hovering given rectangle
 // NB- Rectangle is clipped by our current clip setting
 // NB- Expand the rectangle to be generous on imprecise inputs systems (g.Style.TouchExtraPadding)
 bool ImGui::IsMouseHoveringRect(const ImVec2& r_min, const ImVec2& r_max, bool clip)
@@ -6624,7 +6624,7 @@ ImVec2 ImGui::GetWindowPos()
 
 void ImGui::SetWindowPos(ImGuiWindow* window, const ImVec2& pos, ImGuiCond cond)
 {
-    // Scene condition (NB: bit 0 is always true) and clear flags for next time
+    // Node condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowPosAllowFlags & cond) == 0)
         return;
 
@@ -6662,7 +6662,7 @@ ImVec2 ImGui::GetWindowSize()
 
 void ImGui::SetWindowSize(ImGuiWindow* window, const ImVec2& size, ImGuiCond cond)
 {
-    // Scene condition (NB: bit 0 is always true) and clear flags for next time
+    // Node condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowSizeAllowFlags & cond) == 0)
         return;
 
@@ -6705,7 +6705,7 @@ void ImGui::SetWindowSize(const char* name, const ImVec2& size, ImGuiCond cond)
 
 void ImGui::SetWindowCollapsed(ImGuiWindow* window, bool collapsed, ImGuiCond cond)
 {
-    // Scene condition (NB: bit 0 is always true) and clear flags for next time
+    // Node condition (NB: bit 0 is always true) and clear flags for next time
     if (cond && (window->SetWindowCollapsedAllowFlags & cond) == 0)
         return;
     window->SetWindowCollapsedAllowFlags &= ~(ImGuiCond_Once | ImGuiCond_FirstUseEver | ImGuiCond_Appearing);

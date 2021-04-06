@@ -2,7 +2,7 @@
 #define OPENGL_TEST_SHADER_H
 
 #include <unordered_map>
-#include "vendor/glm/glm.hpp"
+#include "../vendor/glm/ext.hpp"
 
 namespace abstractions {
     struct ShaderProgramSource

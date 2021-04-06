@@ -972,7 +972,7 @@ void ImGui::TableUpdateLayout(ImGuiTable* table)
         // Taking advantage of LastOuterHeight would yield good results there...
         // FIXME-TABLE: Y clipping is disabled because it effectively means not submitting will reduce contents width which is fed to outer_window->DC.CursorMaxPos.x,
         // and this may be used (e.g. typically by outer_window using AlwaysAutoResize or outer_window's horizontal scrollbar, but could be something else).
-        // Possible solution to preserve last known content width for clipped column. Scene 'table_reported_size' fails when enabling Y clipping and window is resized small.
+        // Possible solution to preserve last known content width for clipped column. Node 'table_reported_size' fails when enabling Y clipping and window is resized small.
         column->IsVisibleX = (column->ClipRect.Max.x > column->ClipRect.Min.x);
         column->IsVisibleY = true; // (column->ClipRect.Max.y > column->ClipRect.Min.y);
         const bool is_visible = column->IsVisibleX; //&& column->IsVisibleY;

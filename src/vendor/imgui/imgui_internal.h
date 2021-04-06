@@ -31,7 +31,7 @@ Index of this file:
 // [SECTION] Table support
 // [SECTION] ImGui internal API
 // [SECTION] ImFontAtlas internal API
-// [SECTION] Scene Engine specific hooks (imgui_test_engine)
+// [SECTION] Node Engine specific hooks (imgui_test_engine)
 
 */
 
@@ -1285,7 +1285,7 @@ struct ImGuiContext
     bool                    GcCompactAll;                       // Request full GC
     bool                    TestEngineHookItems;                // Will call abstractions engine hooks: ImGuiTestEngineHook_ItemAdd(), ImGuiTestEngineHook_ItemInfo(), ImGuiTestEngineHook_Log()
     ImGuiID                 TestEngineHookIdInfo;               // Will call abstractions engine hooks: ImGuiTestEngineHook_IdInfo() from GetID()
-    void*                   TestEngine;                         // Scene engine user data
+    void*                   TestEngine;                         // Node engine user data
 
     // Windows state
     ImVector<ImGuiWindow*>  Windows;                            // Windows, sorted in display order, back to front
@@ -2539,7 +2539,7 @@ IMGUI_API void      ImFontAtlasBuildMultiplyCalcLookupTable(unsigned char out_ta
 IMGUI_API void      ImFontAtlasBuildMultiplyRectAlpha8(const unsigned char table[256], unsigned char* pixels, int x, int y, int w, int h, int stride);
 
 //-----------------------------------------------------------------------------
-// [SECTION] Scene Engine specific hooks (imgui_test_engine)
+// [SECTION] Node Engine specific hooks (imgui_test_engine)
 //-----------------------------------------------------------------------------
 
 #ifdef IMGUI_ENABLE_TEST_ENGINE

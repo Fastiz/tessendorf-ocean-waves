@@ -1196,7 +1196,7 @@ enum ImGuiFocusedFlags_
 {
     ImGuiFocusedFlags_None                          = 0,
     ImGuiFocusedFlags_ChildWindows                  = 1 << 0,   // IsWindowFocused(): Return true if any children of the window is focused
-    ImGuiFocusedFlags_RootWindow                    = 1 << 1,   // IsWindowFocused(): Scene from root window (top most parent of the current hierarchy)
+    ImGuiFocusedFlags_RootWindow                    = 1 << 1,   // IsWindowFocused(): Node from root window (top most parent of the current hierarchy)
     ImGuiFocusedFlags_AnyWindow                     = 1 << 2,   // IsWindowFocused(): Return true if any window is focused. Important: If you are trying to tell how to dispatch your low-level inputs, do NOT use this. Use 'io.WantCaptureMouse' instead! Please read the FAQ!
     ImGuiFocusedFlags_RootAndChildWindows           = ImGuiFocusedFlags_RootWindow | ImGuiFocusedFlags_ChildWindows
 };
@@ -1208,7 +1208,7 @@ enum ImGuiHoveredFlags_
 {
     ImGuiHoveredFlags_None                          = 0,        // Return true if directly over the item/window, not obstructed by another window, not obstructed by an active popup or modal blocking inputs under them.
     ImGuiHoveredFlags_ChildWindows                  = 1 << 0,   // IsWindowHovered() only: Return true if any children of the window is hovered
-    ImGuiHoveredFlags_RootWindow                    = 1 << 1,   // IsWindowHovered() only: Scene from root window (top most parent of the current hierarchy)
+    ImGuiHoveredFlags_RootWindow                    = 1 << 1,   // IsWindowHovered() only: Node from root window (top most parent of the current hierarchy)
     ImGuiHoveredFlags_AnyWindow                     = 1 << 2,   // IsWindowHovered() only: Return true if any window is hovered
     ImGuiHoveredFlags_AllowWhenBlockedByPopup       = 1 << 3,   // Return true even if a popup window is normally blocking access to this item/window
     //ImGuiHoveredFlags_AllowWhenBlockedByModal     = 1 << 4,   // Return true even if a modal popup window is normally blocking access to this item/window. FIXME-TODO: Unavailable yet.

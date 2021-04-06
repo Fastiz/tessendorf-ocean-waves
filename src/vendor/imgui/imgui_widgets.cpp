@@ -4503,7 +4503,7 @@ bool ImGui::InputTextEx(const char* label, const char* hint, char* buf, int buf_
             // Vertical scroll
             if (is_multiline)
             {
-                // Scene if cursor is vertically visible
+                // Node if cursor is vertically visible
                 if (cursor_offset.y - g.FontSize < scroll_y)
                     scroll_y = ImMax(0.0f, cursor_offset.y - g.FontSize);
                 else if (cursor_offset.y - inner_size.y >= scroll_y)

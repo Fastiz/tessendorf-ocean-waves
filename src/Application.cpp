@@ -2,15 +2,11 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <csignal>
-#include <scenes/OceanScene.h>
-#include <Scene.h>
-
-#include "Renderer.h"
-#include "VertexBufferLayout.h"
-
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw.h"
-#include "imgui/imgui_impl_opengl3.h"
+#include "scene/OceanScene.h"
+#include "abstractions/Renderer.h"
+#include "vendor/imgui/imgui.h"
+#include "vendor/imgui/imgui_impl_glfw.h"
+#include "vendor/imgui/imgui_impl_opengl3.h"
 
 
 int main()
@@ -22,7 +18,7 @@ int main()
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(960, 540, "Hello World", nullptr, nullptr);
+    window = glfwCreateWindow(960, 540, "Ocean Simulation", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();
@@ -44,7 +40,7 @@ int main()
 
     OceanScene oceanScene;
 
-    abstractions::Scene& scene = oceanScene;
+    Scene& scene = oceanScene;
 
     {
         GLCall(glEnable(GL_BLEND));

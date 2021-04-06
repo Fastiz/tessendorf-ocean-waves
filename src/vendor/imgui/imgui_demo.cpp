@@ -748,7 +748,7 @@ static void ShowDemoWindowWidgets()
             ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanAvailWidth",    &base_flags, ImGuiTreeNodeFlags_SpanAvailWidth); ImGui::SameLine(); HelpMarker("Extend hit area to all available width instead of allowing more items to be laid out after the node.");
             ImGui::CheckboxFlags("ImGuiTreeNodeFlags_SpanFullWidth",     &base_flags, ImGuiTreeNodeFlags_SpanFullWidth);
             ImGui::Checkbox("Align label with current X position", &align_label_with_current_x_position);
-            ImGui::Checkbox("Scene tree node as drag source", &test_drag_and_drop);
+            ImGui::Checkbox("Node tree node as drag source", &test_drag_and_drop);
             ImGui::Text("Hello!");
             if (align_label_with_current_x_position)
                 ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
@@ -880,7 +880,7 @@ static void ShowDemoWindowWidgets()
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
             for (int n = 0; n < 2; n++)
             {
-                ImGui::Text("Scene paragraph %d:", n);
+                ImGui::Text("Node paragraph %d:", n);
                 ImVec2 pos = ImGui::GetCursorScreenPos();
                 ImVec2 marker_min = ImVec2(pos.x + wrap_width, pos.y);
                 ImVec2 marker_max = ImVec2(pos.x + wrap_width + 10, pos.y + ImGui::GetTextLineHeight());
@@ -2927,7 +2927,7 @@ static void ShowDemoWindowLayout()
             ImGui::Begin("Horizontal contents size demo window", &show_horizontal_contents_size_demo_window, show_h_scrollbar ? ImGuiWindowFlags_HorizontalScrollbar : 0);
             ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(2, 0));
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2, 0));
-            HelpMarker("Scene of different widgets react and impact the work rectangle growing when horizontal scrolling is enabled.\n\nUse 'Metrics->Tools->Show windows rectangles' to visualize rectangles.");
+            HelpMarker("Node of different widgets react and impact the work rectangle growing when horizontal scrolling is enabled.\n\nUse 'Metrics->Tools->Show windows rectangles' to visualize rectangles.");
             ImGui::Checkbox("H-scrollbar", &show_h_scrollbar);
             ImGui::Checkbox("Button", &show_button);            // Will grow contents size (unless explicitly overwritten)
             ImGui::Checkbox("Tree nodes", &show_tree_nodes);    // Will grow contents size and display highlight over full width
@@ -6856,7 +6856,7 @@ static void ShowExampleAppLongText(bool* p_open)
     static ImGuiTextBuffer log;
     static int lines = 0;
     ImGui::Text("Printing unusually long amount of text.");
-    ImGui::Combo("Scene type", &test_type,
+    ImGui::Combo("Node type", &test_type,
         "Single call to TextUnformatted()\0"
         "Multiple calls to Text(), clipped\0"
         "Multiple calls to Text(), not clipped (slow)\0");
@@ -7501,8 +7501,8 @@ void ShowExampleAppDocuments(bool* p_open)
                 NotifyOfDocumentsClosedElsewhere(app);
 
             // [DEBUG] Stress abstractions
-            //if ((ImGui::GetFrameCount() % 30) == 0) docs[1].Open ^= 1;            // [DEBUG] Automatically show/hide a tab. Scene various interactions e.g. dragging with this on.
-            //if (ImGui::GetIO().KeyCtrl) ImGui::SetTabItemSelected(docs[1].Name);  // [DEBUG] Scene SetTabItemSelected(), probably not very useful as-is anyway..
+            //if ((ImGui::GetFrameCount() % 30) == 0) docs[1].Open ^= 1;            // [DEBUG] Automatically show/hide a tab. Node various interactions e.g. dragging with this on.
+            //if (ImGui::GetIO().KeyCtrl) ImGui::SetTabItemSelected(docs[1].Name);  // [DEBUG] Node SetTabItemSelected(), probably not very useful as-is anyway..
 
             // Submit Tabs
             for (int doc_n = 0; doc_n < app.Documents.Size; doc_n++)
