@@ -5,20 +5,14 @@
 #include "../vendor/glm/ext.hpp"
 
 namespace abstractions {
-    struct ShaderProgramSource
-    {
-        std::string VertexSource;
-        std::string FragmentSource;
-    };
 
     class Shader
     {
     private:
-        std::string m_FilePath;
-        unsigned int m_RendererID;
         std::unordered_map<std::string, int> m_UniformLocationCache;
+    protected:
+        unsigned int m_RendererID;
     public:
-        Shader(const std::string& filepath);
         ~Shader();
 
         void Bind() const;
@@ -32,10 +26,9 @@ namespace abstractions {
         void SetUniform1f(const std::string &name, float v);
     private:
         int GetUniformLocation(const std::string& name);
-
-        ShaderProgramSource ParseShader(const std::string &filePath);
+    protected:
+        std::string ParseShader(const std::string& filePath);
         unsigned int CompileShader(unsigned int type, const std::string &source);
-        unsigned int CreateShader(const std::string &vertexShader, const std::string &fragmentShader);
     };
 
 }

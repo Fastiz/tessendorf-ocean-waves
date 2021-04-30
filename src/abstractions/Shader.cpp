@@ -5,14 +5,6 @@
 #include "Renderer.h"
 
 namespace abstractions {
-    Shader::Shader(const std::string &filepath)
-            : m_FilePath(filepath), m_RendererID(0)
-    {
-        ShaderProgramSource source = ParseShader(filepath);
-
-        m_RendererID = CreateShader(source.VertexSource, source.FragmentSource);
-    }
-
     Shader::~Shader() {
         GLCall(glDeleteProgram(m_RendererID));
     }
@@ -59,39 +51,6 @@ namespace abstractions {
         return location;
     }
 
-    ShaderProgramSource Shader::ParseShader(const std::string& filePath){
-        std::ifstream stream(filePath);
-
-        enum class ShaderType
-        {
-            NONE = -1, VERTEX = 0, FRAGMENT = 1
-        };
-
-        std::string line;
-        std::stringstream ss[2];
-        ShaderType type = ShaderType::NONE;
-        while(getline(stream, line))
-        {
-            if(line.find("#shader") != std::string::npos)
-            {
-                if(line.find("vertex") != std::string::npos)
-                {
-                    type = ShaderType::VERTEX;
-                }
-                else if(line.find("fragment") != std::string::npos)
-                {
-                    type = ShaderType::FRAGMENT;
-                }
-            }
-            else
-            {
-                ss[(int)type] << line << '\n';
-            }
-        }
-
-        return { ss[0].str(), ss[1].str() };
-    }
-
     unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
     {
         GLCall(unsigned int id = glCreateShader(type));
@@ -117,20 +76,17 @@ namespace abstractions {
         return id;
     }
 
-    unsigned int Shader::CreateShader(const std::string& vertexShader, const std::string& fragmentShader)
-    {
-        GLCall(unsigned int program = glCreateProgram());
-        unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-        unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
+    std::string Shader::ParseShader(const std::string& filePath){
+        std::ifstream stream(filePath);
 
-        GLCall(glAttachShader(program, vs));
-        GLCall(glAttachShader(program, fs));
-        GLCall(glLinkProgram(program));
-        GLCall(glValidateProgram(program));
+        std::string line;
+        std::stringstream ss;
+        while(getline(stream, line))
+        {
+            ss << line << '\n';
+        }
 
-        GLCall(glDeleteShader(vs));
-        GLCall(glDeleteShader(fs));
-
-        return program;
+        return ss.str();
     }
+
 }

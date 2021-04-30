@@ -5,6 +5,7 @@
 #include "../abstractions/VertexArray.h"
 #include "../abstractions/Shader.h"
 #include "../abstractions/VertexBufferLayout.h"
+#include "../abstractions/RenderingShader.h"
 
 Ocean::Ocean(int width, int height): width(width), height(height) {
     vao = std::make_unique<abstractions::VertexArray>();
@@ -23,7 +24,9 @@ Ocean::Ocean(int width, int height): width(width), height(height) {
     layout->Push<float>(3);
     vao->AddBuffer(*vertexBuffer, *layout);
 
-    shader = std::make_unique<abstractions::Shader>("../../res/shaders/BasicLighting.shader");
+    shader = std::make_unique<abstractions::RenderingShader>(
+            "../../res/shaders/BasicLighting/vertex.shader",
+            "../../res/shaders/BasicLighting/fragment.shader");
     shader->Bind();
 
     shader->SetUniform3f("objectColor", 0.31f, 0.5f, 1.0f);
