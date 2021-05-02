@@ -1,6 +1,6 @@
 #include <array>
 #include <utils/grid.h>
-#include <test_utils.h>
+#include "../test_utils.h"
 #include "grid_test.h"
 
 namespace grid_test {
