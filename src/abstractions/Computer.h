@@ -7,6 +7,8 @@ namespace abstractions {
     class Computer {
     public:
         void DispatchCompute(ComputeShader& shader, int num_groups_x, int num_groups_y, int num_groups_z);
+
+        static void MemoryBarrier();
     };
 
 }

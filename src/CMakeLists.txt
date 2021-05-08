@@ -23,6 +23,9 @@ file(GLOB SOURCES
         scene/*.h
         scene/*.cpp
 
+        scene/fft/*.h
+        scene/fft/*.cpp
+
         abstractions/primitive_shapes/*.h
         abstractions/primitive_shapes/*.cpp
 

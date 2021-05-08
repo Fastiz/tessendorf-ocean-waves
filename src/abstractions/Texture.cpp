@@ -23,6 +23,12 @@ namespace abstractions {
         GenerateTexture();
     }
 
+    Texture::Texture(float *buffer, int width, int height)
+        : m_LocalBuffer(buffer), m_Width(width), m_Height(height)
+    {
+        GenerateTexture();
+    }
+
     void Texture::GenerateTexture(){
         GLCall(glGenTextures(1, &m_RendererID));
 
@@ -36,7 +42,7 @@ namespace abstractions {
         GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_Width, m_Height, 0, GL_RGBA, GL_FLOAT, m_LocalBuffer));
     }
 
-    Texture::~Texture() {
+    void Texture::DeleteTexture() {
         GLCall(glDeleteTextures(1, &m_RendererID));
     }
 
@@ -54,7 +60,7 @@ namespace abstractions {
     }
 
     std::vector<float> Texture::GetTextureImage(unsigned int slot) {
-        Bind(slot);
+        GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
 
         std::vector<float> pixels(m_Width * m_Height * 4);
         GLCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &pixels[0]));

@@ -6,6 +6,7 @@
 #include <abstractions/Renderer.h>
 #include "utils/grid_test.h"
 #include "abstractions/compute_shader_test.h"
+#include "scene/fft/textures_test.h"
 
 int initialize_opengl(){
     GLFWwindow* window;
@@ -45,6 +46,7 @@ int main(){
 
     grid_test::run();
     compute_shader_test::run();
+    textures_test::run();
 
     glfwTerminate();
 

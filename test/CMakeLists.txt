@@ -13,6 +13,12 @@ file(GLOB SOURCES
 
         abstractions/*.h
         abstractions/*.cpp
+
+        scene/*.h
+        scene/*.cpp
+
+        scene/fft/*.h
+        scene/fft/*.cpp
         )
 
 add_executable(Test ${SOURCE_FILES} ${SOURCES}) # which files should produce executables
