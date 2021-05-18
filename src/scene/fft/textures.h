@@ -9,6 +9,8 @@ namespace textures {
     };
 
     SpectrumTextures generate_spectrum_textures(int N, float A, float wind_x, float wind_y, float L);
+
+    abstractions::Texture generate_transform_texture(abstractions::Texture& h0, abstractions::Texture& h0conj, int N, float L, float t);
 }
 
 
