@@ -1,7 +1,7 @@
 #include <scene/fft/textures.h>
 #include "textures_test.h"
-
-#include <vendor/std_image/stb_image_write.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 #define H0_TEXTURE_PATH "../../res/textures/test/fft/h0.png"
 #define H0CONJ_TEXTURE_PATH "../../res/textures/test/fft/h0conj.png"

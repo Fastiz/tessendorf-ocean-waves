@@ -2,7 +2,7 @@
 #define OPENGL_TEST_SHADER_H
 
 #include <unordered_map>
-#include "../vendor/glm/ext.hpp"
+#include <glm/ext.hpp>
 
 namespace abstractions {
 

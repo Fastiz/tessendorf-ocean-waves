@@ -3,7 +3,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "../vendor/glm/ext.hpp"
+#include <glm/ext.hpp>
 
 class Camera {
 private:

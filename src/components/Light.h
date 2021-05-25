@@ -2,7 +2,7 @@
 #define OPENGL_TEST_LIGHT_H
 
 
-#include "../vendor/glm/vec3.hpp"
+#include <glm/vec3.hpp>
 
 class Light {
 private:

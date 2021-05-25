@@ -1,6 +1,6 @@
 #include <functional>
 #include "grid.h"
-#include "../vendor/glm/ext.hpp"
+#include <glm/ext.hpp>
 
 namespace utils {
     /*

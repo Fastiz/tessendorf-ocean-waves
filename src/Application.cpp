@@ -4,9 +4,9 @@
 #include <csignal>
 #include "scene/OceanScene.h"
 #include "abstractions/Renderer.h"
-#include "vendor/imgui/imgui.h"
-#include "vendor/imgui/imgui_impl_glfw.h"
-#include "vendor/imgui/imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 
 int main()

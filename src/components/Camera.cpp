@@ -1,8 +1,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "Camera.h"
-#include "../vendor/glm/ext.hpp"
-#include "../vendor/glm/mat4x4.hpp"
+#include <glm/ext.hpp>
+#include <glm/mat4x4.hpp>
 #include <iostream>
 
 Camera::Camera()
