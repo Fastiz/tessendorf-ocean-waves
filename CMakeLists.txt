@@ -30,5 +30,10 @@ file(GLOB IMGUI_SOURCE_FILES
 add_library(imgui ${IMGUI_SOURCE_FILES})
 include_directories(submodules/imgui)
 
+# GLFFT LIBRARY
+file(GLOB GLFFT_SOURCE_FILES submodules/GLFFT/*.cpp)
+add_library(GLFFT ${GLFFT_SOURCE_FILES})
+include_directories(submodules/GLFFT)
+
 add_subdirectory(src)
 add_subdirectory(test)

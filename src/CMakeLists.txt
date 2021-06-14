@@ -16,6 +16,8 @@ target_link_libraries(ocean_water_simulation glfw)
 
 target_link_libraries(ocean_water_simulation GLEW)
 
+target_link_libraries(ocean_water_simulation GLFFT)
+
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(ocean_water_simulation OpenGL::GL)

@@ -43,10 +43,6 @@ namespace abstractions {
         GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_Width, m_Height, 0, GL_RGBA, GL_FLOAT, m_LocalBuffer));
     }
 
-    void Texture::DeleteTexture() {
-        GLCall(glDeleteTextures(1, &m_RendererID));
-    }
-
     void Texture::Bind(unsigned int slot) {
         GLCall(glActiveTexture(GL_TEXTURE0 + slot));
         GLCall(glBindTexture(GL_TEXTURE_2D, m_RendererID));
@@ -67,5 +63,9 @@ namespace abstractions {
         GLCall(glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &pixels[0]));
 
         return pixels;
+    }
+
+    Texture::~Texture() {
+        GLCall(glDeleteTextures(1, &m_RendererID));
     }
 }

@@ -77,7 +77,5 @@ namespace compute_shader_test {
         }
 
         IS_TRUE(errors == 0)
-
-        output_texture.DeleteTexture();
     }
 }

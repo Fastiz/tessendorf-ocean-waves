@@ -7,3 +7,6 @@
 [submodule "submodules/imgui"]
 	path = submodules/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "submodules/GLFFT"]
+	path = submodules/GLFFT
+	url = https://github.com/Themaister/GLFFT.git

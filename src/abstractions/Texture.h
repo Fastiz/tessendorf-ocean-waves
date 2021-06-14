@@ -14,10 +14,10 @@ namespace abstractions {
         int m_Width{}, m_Height{}, m_BPP{};
     public:
         Texture(int width, int height);
+        ~Texture();
         explicit Texture(const std::string& path);
         explicit Texture(float *buffer, int width, int height);
 
-        void DeleteTexture();
         void Bind(unsigned int slot = 0);
 
         void Unbind();
@@ -27,6 +27,8 @@ namespace abstractions {
         inline int GetWidth() const { return m_Width; }
 
         inline int GetHeight() const { return m_Height; }
+
+        unsigned int GetRendererId() const { return m_RendererID; }
 
     protected:
         void GenerateTexture();

@@ -29,6 +29,8 @@ target_link_libraries(Test glfw)
 
 target_link_libraries(Test GLEW)
 
+target_link_libraries(Test GLFFT)
+
 find_package(OpenGL REQUIRED)
 
 target_link_libraries(Test OpenGL::GL)

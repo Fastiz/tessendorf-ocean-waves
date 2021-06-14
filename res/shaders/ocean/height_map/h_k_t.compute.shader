@@ -5,12 +5,17 @@
 
 layout(local_size_x = 1, local_size_y = 1) in;
 
-// Real part on red channel and imaginary on green
-layout(rgba32f, binding = 0) uniform readonly image2D h0_txt;
+layout(std430, binding = 0) readonly buffer Block {
+    vec2 values[];
+} h0_txt;
 
-layout(rgba32f, binding = 1) uniform readonly image2D h0conj_txt;
+layout(std430, binding = 1) readonly buffer Block2 {
+    vec2 values[];
+} h0conj_txt;
 
-layout(rgba32f, binding = 2) uniform writeonly image2D h_k_t_txt;
+layout(std430, binding = 2) writeonly buffer Block3 {
+    vec2 values[];
+} h_k_t_txt;
 
 uniform float time;
 uniform int N;
@@ -31,15 +36,17 @@ float dispersion(float k){
 void main(){
     ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
 
-    vec2 h0 = imageLoad(h0_txt, coords).rg;
-    vec2 h0conj = imageLoad(h0conj_txt, coords).rg;
+    vec2 h0 = h0_txt.values[coords.x + coords.y*N];
 
     ivec2 nm = ivec2(coords.x - float(N) / 2.0f, coords.y - float(N) / 2.0f);
+
+    vec2 h0conj = h0conj_txt.values[-nm.x + N / 2 + (-nm.y + N / 2)*N];
+
     vec2 K = vec2(2.0 * PI * nm.x / L, 2.0 * PI * nm.y / L);
 
     float coef = time * dispersion(length(K));
 
     vec2 h_k_t = complex_product(h0, complex_exp(coef)) + complex_product(h0conj, complex_exp(-coef));
 
-    imageStore(h_k_t_txt, coords, vec4(h_k_t, 0.0f, 1.0f));
+    h_k_t_txt.values[coords.x + coords.y*N] = h_k_t;
 }

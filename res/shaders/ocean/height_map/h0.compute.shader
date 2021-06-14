@@ -4,12 +4,18 @@
 #define GRAVITY_CONSTANT 9.8f
 
 layout(local_size_x = 1, local_size_y = 1) in;
-
 // Real part on red channel and imaginary on green
-layout(rgba32f, binding = 0) uniform writeonly image2D h0;
+
+layout(std430, binding = 0) writeonly buffer Block {
+    vec2 values[];
+} h0;
+
+layout(std430, binding = 1) writeonly buffer Block2 {
+    vec2 values[];
+} h0conj;
 
 // Independent uniform distributions on [0-1] on channels R and G
-layout(rgba32f, binding = 1) uniform readonly image2D noise;
+layout(rgba32f, binding = 2) uniform readonly image2D noise;
 
 uniform int N;
 uniform float L;
@@ -63,5 +69,6 @@ void main(){
 
     vec2 h0_val = calculate_h0(K);
 
-    imageStore(h0, coords, vec4(h0_val, 0.0f, 1.0f));
+    h0.values[coords.x + coords.y * N] = h0_val;
+    h0conj.values[coords.x + coords.y * N] = vec2(h0_val.x, -h0_val.y);
 }
