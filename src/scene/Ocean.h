@@ -8,6 +8,8 @@
 #include "../abstractions/VertexBuffer.h"
 #include "../abstractions/VertexArray.h"
 #include "../abstractions/VertexBufferLayout.h"
+#include "../abstractions/SSBO.h"
+#include "./fft/textures.h"
 
 class Ocean : public Node {
 private:
@@ -17,6 +19,9 @@ private:
     std::unique_ptr<abstractions::VertexBufferLayout> layout;
 
     std::vector<std::array<glm::vec3, 3>> triangles, normals;
+
+    std::pair<textures::ssbo_pointer, textures::ssbo_pointer> spectrum_textures;
+    textures::ssbo_pointer height_map;
 
     int width, height;
 

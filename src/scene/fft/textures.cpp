@@ -6,6 +6,7 @@
 #include <glfft.hpp>
 #include <glfft_gl_interface.hpp>
 #include <GL/glew.h>
+#include <iostream>
 
 #define H0_COMPUTE_SHADER "../../res/shaders/ocean/height_map/h0.compute.shader"
 #define H0CONJ_COMPUTE_SHADER "../../res/shaders/ocean/height_map/h0conj.compute.shader"
@@ -61,33 +62,48 @@ namespace textures {
         return out;
     }
 
-    std::shared_ptr<abstractions::Texture> update_fft_texture(ssbo_pointer& h_k_t, int N){
-        GLFFT::FFTOptions options; // Default initializes to something conservative in terms of performance.
-        options.type.fp16 = true; // Use mediump float (if GLES) in shaders.
-        options.type.input_fp16 = false; // Use FP32 input.
-        options.type.output_fp16 = true; // Use FP16 output.
-        options.type.normalize = true; // Normalized FFT.
+    void check_if_nan(std::vector<float>& list){
+        for(int i=0; i<list.size(); i++){
+            if(std::isnan(list[i])) {
+                std::cout << i << std::endl;
+                list[i] = 0;
+            }
+        }
+    }
 
+    std::shared_ptr<abstractions::SSBO> update_fft_texture(ssbo_pointer& h_k_t, int N){
+        GLFFT::FFTOptions options;
         GLFFT::GLContext context;
 
-        GLFFT::FFT fft(&context, N, N, GLFFT::ComplexToReal, GLFFT::Inverse, GLFFT::SSBO, GLFFT::ImageReal, std::make_shared<GLFFT::ProgramCache>(), options);
+        GLFFT::FFT fft(&context, N, N, GLFFT::ComplexToReal, GLFFT::Inverse, GLFFT::SSBO, GLFFT::SSBO, std::make_shared<GLFFT::ProgramCache>(), options);
 
         GLuint output_texture, input_texture;
 
-//        std::shared_ptr<abstractions::SSBO> out(new abstractions::SSBO(nullptr, 4*4*N*N, GL_DYNAMIC_COPY));
-        std::shared_ptr<abstractions::Texture> out;
+        std::vector<float> h_k_t_values(N*N*2);
+        h_k_t->GetBufferData(&h_k_t_values[0]);
+        check_if_nan(h_k_t_values);
 
-        input_texture = (*h_k_t).GetRendererId();
+        std::shared_ptr<abstractions::SSBO> in(new abstractions::SSBO(&h_k_t_values[0], 4*N*N*2, GL_DYNAMIC_COPY));
+
+        std::shared_ptr<abstractions::SSBO> out(new abstractions::SSBO(nullptr, 4*N*N, GL_DYNAMIC_COPY));
+//        std::shared_ptr<abstractions::Texture> out(new abstractions::Texture(N, N));
+
+        input_texture = (*in).GetRendererId();
         output_texture = (*out).GetRendererId();
 
         // Adapt raw GL types to types which GLContext uses internally.
-        GLFFT::GLTexture adaptor_output(output_texture);
+        GLFFT::GLBuffer adaptor_output(output_texture);
         GLFFT::GLBuffer adaptor_input(input_texture);
 
-        // Do the FFT
-        GLFFT::CommandBuffer *cmd = context.request_command_buffer();
-        fft.process(cmd, &adaptor_output, &adaptor_input);
-        context.submit_command_buffer(cmd);
+        GLCall(
+                {
+                    // Do the FFT
+                    GLFFT::CommandBuffer *cmd = context.request_command_buffer();
+                    fft.process(cmd, &adaptor_output, &adaptor_input);
+                    context.submit_command_buffer(cmd);
+                }
+                )
+
 
         GLCall(glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT));
 

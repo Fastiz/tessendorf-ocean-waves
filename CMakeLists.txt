@@ -30,10 +30,14 @@ file(GLOB IMGUI_SOURCE_FILES
 add_library(imgui ${IMGUI_SOURCE_FILES})
 include_directories(submodules/imgui)
 
+set(CMAKE_CXX_STANDARD 11)
+
 # GLFFT LIBRARY
 file(GLOB GLFFT_SOURCE_FILES submodules/GLFFT/*.cpp)
 add_library(GLFFT ${GLFFT_SOURCE_FILES})
 include_directories(submodules/GLFFT)
+
+set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(src)
 add_subdirectory(test)

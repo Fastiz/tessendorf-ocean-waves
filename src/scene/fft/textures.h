@@ -12,7 +12,7 @@ namespace textures {
 
     ssbo_pointer generate_transform_texture(ssbo_pointer& h0, ssbo_pointer& h0conj, int N, float L, float t);
 
-    std::shared_ptr<abstractions::Texture> update_fft_texture(ssbo_pointer& h_k_t, int N);
+    ssbo_pointer update_fft_texture(ssbo_pointer& h_k_t, int N);
 }
 
 

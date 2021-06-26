@@ -30,7 +30,9 @@ vec2 complex_exp(float coef){
 }
 
 float dispersion(float k){
-    return sqrt(GRAVITY_CONSTANT * k);
+    float clamped_k = max(k, 0.00001);
+
+    return sqrt(GRAVITY_CONSTANT * clamped_k);
 }
 
 void main(){
@@ -38,7 +40,7 @@ void main(){
 
     vec2 h0 = h0_txt.values[coords.x + coords.y*N];
 
-    ivec2 nm = ivec2(coords.x - float(N) / 2.0f, coords.y - float(N) / 2.0f);
+    ivec2 nm = ivec2(coords.x - N / 2, coords.y - N / 2);
 
     vec2 h0conj = h0conj_txt.values[-nm.x + N / 2 + (-nm.y + N / 2)*N];
 

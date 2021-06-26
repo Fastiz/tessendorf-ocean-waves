@@ -2,16 +2,16 @@
 #include "Ocean.h"
 #include "../utils/grid.h"
 #include "../components/Camera.h"
-#include "../abstractions/VertexArray.h"
-#include "../abstractions/Shader.h"
-#include "../abstractions/VertexBufferLayout.h"
 #include "../abstractions/RenderingShader.h"
+
+#define N 256
+#define L N
 
 Ocean::Ocean(int width, int height): width(width), height(height) {
     vao = std::make_unique<abstractions::VertexArray>();
 
     triangles = utils::generate_grid_mesh(width, height);
-    triangles = utils::scale_grid(triangles, 100.0f, 100.0f);
+//    triangles = utils::scale_grid(triangles, 100.0f, 100.0f);
 
     normals = utils::generate_triangle_normals(triangles);
 
@@ -31,6 +31,9 @@ Ocean::Ocean(int width, int height): width(width), height(height) {
 
     shader->SetUniform3f("objectColor", 0.31f, 0.5f, 1.0f);
     shader->SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+    shader->SetUniform1i("N", N);
+
+    spectrum_textures = textures::generate_spectrum_textures(N, 4, 1.0f, 1.0f, 256);
 }
 
 void Ocean::OnRender(Camera& camera) {
@@ -51,6 +54,8 @@ void Ocean::OnRender(Camera& camera) {
     model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
     shader->SetUniformMat4f("model", model);
 
+    height_map->BindToSlot(0);
+
     renderer.DrawArrays(*vao, *shader, 0, width * height * 2 * 3);
 }
 
@@ -59,4 +64,7 @@ void Ocean::OnUpdate(double deltaTime) {
 
     shader->Bind();
     shader->SetUniform1f("elapsedTime", (float) elapsedTime);
+
+    textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), N, L, (float) elapsedTime);
+    height_map = textures::update_fft_texture(h_k_t, N);
 }

@@ -1,9 +1,12 @@
 #include <random>
+#include <chrono>
 #include "./noise_texture.h"
 
 namespace utils {
     abstractions::Texture generate_noise_texture(int width, int height){
         std::default_random_engine generator;
+        generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+
         std::uniform_real_distribution<double> distribution(0.0,1.0);
 
         std::vector<float> buffer(width * height * 4);
