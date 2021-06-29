@@ -62,15 +62,6 @@ namespace textures {
         return out;
     }
 
-    void check_if_nan(std::vector<float>& list){
-        for(int i=0; i<list.size(); i++){
-            if(std::isnan(list[i])) {
-                std::cout << i << std::endl;
-                list[i] = 0;
-            }
-        }
-    }
-
     std::shared_ptr<abstractions::SSBO> update_fft_texture(ssbo_pointer& h_k_t, int N){
         GLFFT::FFTOptions options;
         GLFFT::GLContext context;
@@ -79,16 +70,9 @@ namespace textures {
 
         GLuint output_texture, input_texture;
 
-        std::vector<float> h_k_t_values(N*N*2);
-        h_k_t->GetBufferData(&h_k_t_values[0]);
-        check_if_nan(h_k_t_values);
-
-        std::shared_ptr<abstractions::SSBO> in(new abstractions::SSBO(&h_k_t_values[0], 4*N*N*2, GL_DYNAMIC_COPY));
-
         std::shared_ptr<abstractions::SSBO> out(new abstractions::SSBO(nullptr, 4*N*N, GL_DYNAMIC_COPY));
-//        std::shared_ptr<abstractions::Texture> out(new abstractions::Texture(N, N));
 
-        input_texture = (*in).GetRendererId();
+        input_texture = (*h_k_t).GetRendererId();
         output_texture = (*out).GetRendererId();
 
         // Adapt raw GL types to types which GLContext uses internally.

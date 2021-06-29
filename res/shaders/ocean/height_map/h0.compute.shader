@@ -37,7 +37,10 @@ vec2 gauss_random(){
 
 float philips_spectrum(float A, float L_, vec2 K, vec2 W){
     float K_norm = length(K);
-    float clamped_k = max(K_norm, 0.00001);
+
+    if(K_norm == 0) return 0;
+
+    float clamped_k = max(K_norm, 0.001);
 
     float exponential = exp(-1.0f / pow(clamped_k * L_, 2));
     float dotProduct = pow(
