@@ -4,14 +4,12 @@
 #include "../components/Camera.h"
 #include "../abstractions/RenderingShader.h"
 
-#define N 256
-#define L N
 
-Ocean::Ocean(int width, int height): width(width), height(height) {
+Ocean::Ocean(int width, int height, int N, float L): width(width), height(height), N(N), L(L) {
     vao = std::make_unique<abstractions::VertexArray>();
 
-    triangles = utils::generate_grid_mesh(width, height);
-//    triangles = utils::scale_grid(triangles, 100.0f, 100.0f);
+    triangles = utils::generate_grid_mesh(N, N);
+//    triangles = utils::scale_grid(triangles, L*0.001/(float)N, L*0.001/(float)N);
 
     normals = utils::generate_triangle_normals(triangles);
 
@@ -32,8 +30,9 @@ Ocean::Ocean(int width, int height): width(width), height(height) {
     shader->SetUniform3f("objectColor", 0.31f, 0.5f, 1.0f);
     shader->SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
     shader->SetUniform1i("N", N);
+//    shader->SetUniform1f("L", L*0.001);
 
-    spectrum_textures = textures::generate_spectrum_textures(N, 4, 1.0f, 1.0f, 256);
+    spectrum_textures = textures::generate_spectrum_textures(N, L, 1.0f, 0.0f, 31.0f, L);
 }
 
 void Ocean::OnRender(Camera& camera) {
@@ -51,7 +50,8 @@ void Ocean::OnRender(Camera& camera) {
     shader->SetUniform3f("lightPos", lightPos[0], lightPos[1], lightPos[2]);
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, -10.0f, 0.0f));
+    float scale = (float)L/(float)N;
+    model = glm::scale(model, glm::vec3(scale, 1/100000.0f, scale));
     shader->SetUniformMat4f("model", model);
 
     height_map->BindToSlot(0);
@@ -61,9 +61,6 @@ void Ocean::OnRender(Camera& camera) {
 
 void Ocean::OnUpdate(double deltaTime) {
     elapsedTime += deltaTime;
-
-    shader->Bind();
-    shader->SetUniform1f("elapsedTime", (float) elapsedTime);
 
     textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), N, L, (float) elapsedTime);
     height_map = textures::update_fft_texture(h_k_t, N);

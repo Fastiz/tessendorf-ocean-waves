@@ -4,6 +4,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(ocean_water_simulation)
 
+include_directories(submodules/includes)
+
 # GLM LIBRARY
 file(GLOB_RECURSE GLM_SOURCE_FILES CONFIGURE_DEPENDS "submodules/glm/glm/*.h" "submodules/glm/glm/*.cpp" "submodules/glm/glm/*.hpp")
 add_library(glm ${GLM_SOURCE_FILES})

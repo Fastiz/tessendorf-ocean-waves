@@ -98,7 +98,7 @@ namespace utils {
             for(int i=0; i<3; i++){
                 glm::vec3& vertex = triangle[i];
 
-                new_triangle[i] = {vertex[0]/x, vertex[1], vertex[2]/z};
+                new_triangle[i] = {vertex[0]*x, vertex[1], vertex[2]*z};
             }
             result.push_back(new_triangle);
         }

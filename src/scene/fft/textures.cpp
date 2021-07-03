@@ -14,7 +14,7 @@
 
 namespace textures {
 
-    std::pair<ssbo_pointer, ssbo_pointer> generate_spectrum_textures(int N, float A, float wind_x, float wind_y, float L){
+    std::pair<ssbo_pointer, ssbo_pointer> generate_spectrum_textures(int N, float A, float wind_x, float wind_y, float wind_speed, float L){
         abstractions::ComputeShader h0_shader(H0_COMPUTE_SHADER);
 
         std::unique_ptr<abstractions::SSBO> h0(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
@@ -29,7 +29,8 @@ namespace textures {
 
         h0_shader.Bind();
         h0_shader.SetUniform1f("A", A);
-        h0_shader.SetUniform2f("wind", wind_x, wind_y);
+        h0_shader.SetUniform2f("wind_dir", wind_x, wind_y);
+        h0_shader.SetUniform1f("wind_speed", wind_speed);
         h0_shader.SetUniform1f("L", L);
         h0_shader.SetUniform1i("N", N);
 
@@ -44,7 +45,7 @@ namespace textures {
     ssbo_pointer generate_transform_texture(ssbo_pointer& h0, ssbo_pointer& h0conj, int N, float L, float t){
         abstractions::ComputeShader transform_shader(TRANSFORM_COMPUTE_SHADER);
 
-        ssbo_pointer out(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
+        ssbo_pointer out(new abstractions::SSBO(nullptr, 4*N*N, GL_DYNAMIC_COPY));
 
         (*h0).BindToSlot(0);
         (*h0conj).BindToSlot(1);
@@ -64,6 +65,10 @@ namespace textures {
 
     std::shared_ptr<abstractions::SSBO> update_fft_texture(ssbo_pointer& h_k_t, int N){
         GLFFT::FFTOptions options;
+        options.type.fp16 = false;
+        options.type.output_fp16 = false;
+        options.type.input_fp16 = false;
+//        options.type.normalize = true;
         GLFFT::GLContext context;
 
         GLFFT::FFT fft(&context, N, N, GLFFT::ComplexToReal, GLFFT::Inverse, GLFFT::SSBO, GLFFT::SSBO, std::make_shared<GLFFT::ProgramCache>(), options);

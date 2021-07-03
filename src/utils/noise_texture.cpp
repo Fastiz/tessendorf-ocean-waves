@@ -4,8 +4,7 @@
 
 namespace utils {
     abstractions::Texture generate_noise_texture(int width, int height){
-        std::default_random_engine generator;
-        generator.seed(std::chrono::system_clock::now().time_since_epoch().count());
+        std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
 
         std::uniform_real_distribution<double> distribution(0.0,1.0);
 

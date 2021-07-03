@@ -23,11 +23,12 @@ private:
     std::pair<textures::ssbo_pointer, textures::ssbo_pointer> spectrum_textures;
     textures::ssbo_pointer height_map;
 
-    int width, height;
+    int width, height, N;
+    float L;
 
     double elapsedTime = 0;
 public:
-    Ocean(int width, int height);
+    Ocean(int width, int height, int N, float L);
 
     void OnRender(Camera& camera) override;
 

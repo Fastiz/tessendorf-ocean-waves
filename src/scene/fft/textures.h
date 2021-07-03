@@ -8,7 +8,7 @@
 namespace textures {
     typedef std::shared_ptr<abstractions::SSBO> ssbo_pointer;
 
-    std::pair<ssbo_pointer, ssbo_pointer> generate_spectrum_textures(int N, float A, float wind_x, float wind_y, float L);
+    std::pair<ssbo_pointer, ssbo_pointer> generate_spectrum_textures(int N, float A, float wind_x, float wind_y, float wind_speed, float L);
 
     ssbo_pointer generate_transform_texture(ssbo_pointer& h0, ssbo_pointer& h0conj, int N, float L, float t);
 

@@ -13,25 +13,56 @@ namespace textures_test {
         h0_texture();
     }
 
+    std::vector<float> normalize(std::vector<float> values){
+        float max = std::numeric_limits<float>::lowest(), min = std::numeric_limits<float>::max();
+
+        for(float value : values){
+            if(value > max) max = value;
+            if(value < min) min = value;
+        }
+
+        std::vector<float> result(values.size());
+        for(int i=0; i<values.size(); i++){
+            result[i] = (values[i] - min) / (max - min);
+        }
+
+        return result;
+    }
+
+    std::vector<float> invert_odd_values(std::vector<float> values){
+        std::vector<float> result(values.size());
+
+        for(int i=0; i<values.size(); i++){
+            result[i] = i % 2 == 0 ? values[i] : -values[i];
+        }
+
+        return result;
+    }
+
     // TODO: automatize testing and stop saving textures into files
 #define N 512
-#define L N
+#define L 1000
     void h0_texture(){
-        auto textures = textures::generate_spectrum_textures(N, 4, 1.0f, 1.0f, 256);
+        auto textures = textures::generate_spectrum_textures(N, 1, 1.0f, 0.0f, 30.0f, L);
         textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(textures), std::get<1>(textures), N, L, 1.0);
         textures::ssbo_pointer height_map = textures::update_fft_texture(h_k_t, N);
 
         std::vector<float> h0_values(N*N*2);
         get<0>(textures)->GetBufferData(&h0_values[0]);
+//        h0_values = normalize(h0_values);
 
         std::vector<float> h0conj_values(N*N*2);
         get<1>(textures)->GetBufferData(&h0conj_values[0]);
+//        h0conj_values = normalize(h0conj_values);
 
         std::vector<float> h_k_t_values(N*N*2);
         h_k_t->GetBufferData(&h_k_t_values[0]);
+//        h_k_t_values = normalize(h_k_t_values);
 
         std::vector<float> height_map_values(N*N);
         height_map->GetBufferData(&height_map_values[0]);
+//        height_map_values = invert_odd_values(height_map_values);
+        height_map_values = normalize(height_map_values);
 
         std::vector<unsigned char> h0_char_data(N * N * 4);
         std::vector<unsigned char> h0conj_char_data(N * N * 4);
@@ -55,7 +86,7 @@ namespace textures_test {
             h_k_t_char_data[i*4+2] = 0;
             h_k_t_char_data[i*4+3] = 255;
 
-            float value = height_map_values[i] + 127;
+            float value = height_map_values[i] * 255;
             height_map_char_data[i*4] = (unsigned char)(value);
             height_map_char_data[i*4+1] = (unsigned char)(value);
             height_map_char_data[i*4+2] = (unsigned char)(value);

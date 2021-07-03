@@ -30,21 +30,32 @@ vec2 complex_exp(float coef){
 }
 
 float dispersion(float k){
-    float clamped_k = max(k, 0.00001);
+    return sqrt(GRAVITY_CONSTANT * k);
+}
 
-    return sqrt(GRAVITY_CONSTANT * clamped_k);
+ivec2 nm_to_xy(ivec2 nm){
+    return ivec2(nm.x+N/2, nm.y+N/2);
+}
+
+ivec2 xy_to_nm(ivec2 xy){
+    return ivec2(xy.x-N/2, xy.y-N/2);
+}
+
+vec2 nm_to_k(ivec2 nm){
+    return vec2(2.0 * PI * nm.x / L, 2.0 * PI * nm.y / L);
 }
 
 void main(){
     ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
 
+    ivec2 nm = xy_to_nm(coords);
+
     vec2 h0 = h0_txt.values[coords.x + coords.y*N];
 
-    ivec2 nm = ivec2(coords.x - N / 2, coords.y - N / 2);
+    ivec2 negative_coords = nm_to_xy(-nm);
+    vec2 h0conj = h0conj_txt.values[negative_coords.x + negative_coords.y*N];
 
-    vec2 h0conj = h0conj_txt.values[-nm.x + N / 2 + (-nm.y + N / 2)*N];
-
-    vec2 K = vec2(2.0 * PI * nm.x / L, 2.0 * PI * nm.y / L);
+    vec2 K = nm_to_k(nm);
 
     float coef = time * dispersion(length(K));
 

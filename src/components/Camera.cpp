@@ -15,7 +15,7 @@ Camera::Camera()
         )
     ),
     proj(
-        glm::perspective(glm::radians(45.f), 800.0f / 600.0f, 0.1f, 100.0f)
+        glm::perspective(glm::radians(45.f), 800.0f / 600.0f, 0.1f, 1000.0f)
     ),
     captured(false),
     firstMouse(true),
