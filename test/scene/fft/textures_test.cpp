@@ -2,7 +2,9 @@
 #include "textures_test.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
+#include <utils/noise_texture.h>
 
+#define NOISE_TEXTURE_PATH "../../res/textures/test/fft/noise.png"
 #define H0_TEXTURE_PATH "../../res/textures/test/fft/h0.png"
 #define H0CONJ_TEXTURE_PATH "../../res/textures/test/fft/h0conj.png"
 #define H_K_T_TEXTURE_PATH "../../res/textures/test/fft/h_k_t.png"
@@ -43,9 +45,12 @@ namespace textures_test {
 #define N 512
 #define L 1000
     void h0_texture(){
+        auto noise_texture = utils::generate_noise_texture(N, N);
         auto textures = textures::generate_spectrum_textures(N, 1, 1.0f, 0.0f, 30.0f, L);
         textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(textures), std::get<1>(textures), N, L, 1.0);
         textures::ssbo_pointer height_map = textures::update_fft_texture(h_k_t, N);
+
+        std::vector<float> noise = noise_texture.GetTextureImage(0);
 
         std::vector<float> h0_values(N*N*2);
         get<0>(textures)->GetBufferData(&h0_values[0]);
@@ -64,6 +69,7 @@ namespace textures_test {
 //        height_map_values = invert_odd_values(height_map_values);
         height_map_values = normalize(height_map_values);
 
+        std::vector<unsigned char> noise_char_data(N * N * 4);
         std::vector<unsigned char> h0_char_data(N * N * 4);
         std::vector<unsigned char> h0conj_char_data(N * N * 4);
         std::vector<unsigned char> h_k_t_char_data(N * N * 4);
@@ -71,6 +77,11 @@ namespace textures_test {
 
 
         for(int i=0; i<N*N; i++){
+            noise_char_data[i*4] = (unsigned char)(noise[i*4] * 255);
+            noise_char_data[i*4+1] = (unsigned char)(noise[i*4+1] * 255);
+            noise_char_data[i*4+2] = 0;
+            noise_char_data[i*4+3] = 255;
+
             h0_char_data[i*4] = (unsigned char)(h0_values[i*2] * 255);
             h0_char_data[i*4+1] = (unsigned char)(h0_values[i*2+1] * 255);
             h0_char_data[i*4+2] = 0;
@@ -93,6 +104,7 @@ namespace textures_test {
             height_map_char_data[i*4+3] = 255;
         }
 
+        stbi_write_png(NOISE_TEXTURE_PATH, N, N, 4, &noise_char_data[0], N * 4);
         stbi_write_png(H0_TEXTURE_PATH, N, N, 4, &h0_char_data[0], N * 4);
         stbi_write_png(H0CONJ_TEXTURE_PATH, N, N, 4, &h0conj_char_data[0], N * 4);
         stbi_write_png(H_K_T_TEXTURE_PATH, N, N, 4, &h_k_t_char_data[0], N * 4);

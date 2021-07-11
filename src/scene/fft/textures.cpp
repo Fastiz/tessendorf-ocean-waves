@@ -45,7 +45,7 @@ namespace textures {
     ssbo_pointer generate_transform_texture(ssbo_pointer& h0, ssbo_pointer& h0conj, int N, float L, float t){
         abstractions::ComputeShader transform_shader(TRANSFORM_COMPUTE_SHADER);
 
-        ssbo_pointer out(new abstractions::SSBO(nullptr, 4*N*N, GL_DYNAMIC_COPY));
+        ssbo_pointer out(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
 
         (*h0).BindToSlot(0);
         (*h0conj).BindToSlot(1);
