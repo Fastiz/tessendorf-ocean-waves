@@ -8,8 +8,7 @@
 Ocean::Ocean(int width, int height, int N, float L): width(width), height(height), N(N), L(L) {
     vao = std::make_unique<abstractions::VertexArray>();
 
-    triangles = utils::generate_grid_mesh(N, N);
-//    triangles = utils::scale_grid(triangles, L*0.001/(float)N, L*0.001/(float)N);
+    triangles = utils::generate_grid_mesh(width, height);
 
     normals = utils::generate_triangle_normals(triangles);
 
@@ -30,12 +29,14 @@ Ocean::Ocean(int width, int height, int N, float L): width(width), height(height
     shader->SetUniform3f("objectColor", 0.31f, 0.5f, 1.0f);
     shader->SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
     shader->SetUniform1i("N", N);
-//    shader->SetUniform1f("L", L*0.001);
+    shader->SetUniform1f("L", L);
 
-    spectrum_textures = textures::generate_spectrum_textures(N, L, 1.0f, 0.0f, 31.0f, L);
+    spectrum_textures = textures::generate_spectrum_textures(N, L, 1.0f, 0.0f, 50.0f, L);
 }
 
 void Ocean::OnRender(Camera& camera) {
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
     Renderer renderer;
     renderer.Clear();
 
@@ -50,8 +51,9 @@ void Ocean::OnRender(Camera& camera) {
     shader->SetUniform3f("lightPos", lightPos[0], lightPos[1], lightPos[2]);
 
     glm::mat4 model = glm::mat4(1.0f);
-    float scale = (float)L/(float)N;
-    model = glm::scale(model, glm::vec3(scale, 1/100000.0f, scale));
+    float scale = 0.5f;
+    float dx = (float)L / (float)N;
+    model = glm::scale(model, glm::vec3(dx * scale, scale, dx * scale));
     shader->SetUniformMat4f("model", model);
 
     height_map->BindToSlot(0);

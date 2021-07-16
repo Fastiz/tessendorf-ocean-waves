@@ -54,15 +54,15 @@ namespace textures_test {
 
         std::vector<float> h0_values(N*N*2);
         get<0>(textures)->GetBufferData(&h0_values[0]);
-//        h0_values = normalize(h0_values);
+        h0_values = normalize(h0_values);
 
         std::vector<float> h0conj_values(N*N*2);
         get<1>(textures)->GetBufferData(&h0conj_values[0]);
-//        h0conj_values = normalize(h0conj_values);
+        h0conj_values = normalize(h0conj_values);
 
         std::vector<float> h_k_t_values(N*N*2);
         h_k_t->GetBufferData(&h_k_t_values[0]);
-//        h_k_t_values = normalize(h_k_t_values);
+        h_k_t_values = normalize(h_k_t_values);
 
         std::vector<float> height_map_values(N*N);
         height_map->GetBufferData(&height_map_values[0]);

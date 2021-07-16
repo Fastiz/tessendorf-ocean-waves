@@ -2,6 +2,7 @@
 
 #define PI 3.14159265358979323846
 #define GRAVITY_CONSTANT 9.8f
+#define EPSILON 0.0001f
 
 layout(local_size_x = 1, local_size_y = 1) in;
 // Real part on red channel and imaginary on green
@@ -60,8 +61,8 @@ vec2 gauss_random(){
 
 float philips_spectrum(float A, float L_, vec2 K, vec2 W){
     float k_lenght = length(K);
-//    if(k_lenght < length(nm_to_k(ivec2(70, 0)))) return 0;
-    if(k_lenght == 0) return 0;
+
+    if(k_lenght < EPSILON) return 0;
 
     float kL_ = k_lenght * L_;
 
