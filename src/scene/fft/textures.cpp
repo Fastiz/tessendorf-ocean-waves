@@ -68,7 +68,7 @@ namespace textures {
         options.type.fp16 = false;
         options.type.output_fp16 = false;
         options.type.input_fp16 = false;
-//        options.type.normalize = true;
+        options.type.normalize = true;
         GLFFT::GLContext context;
 
         GLFFT::FFT fft(&context, N, N, GLFFT::ComplexToReal, GLFFT::Inverse, GLFFT::SSBO, GLFFT::SSBO, std::make_shared<GLFFT::ProgramCache>(), options);

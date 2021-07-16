@@ -21,6 +21,28 @@ uniform float time;
 uniform int N;
 uniform float L;
 
+int alias(int a){
+    if(a > N/2) a -= N;
+    return N;
+}
+
+int ialias(int b){
+    if(b < 0) b += N;
+    return b;
+}
+
+ivec2 nm_to_xy(ivec2 nm){
+    return ivec2(ialias(nm.x), ialias(nm.y));
+}
+
+ivec2 xy_to_nm(ivec2 xy){
+    return ivec2(alias(xy.x), alias(xy.y));
+}
+
+vec2 nm_to_k(ivec2 nm){
+    return vec2(2.0 * PI * nm.x / L, 2.0 * PI * nm.y / L);
+}
+
 vec2 complex_product(vec2 a, vec2 b){
     return vec2(a.x*b.x - a.y*b.y, a.x*b.y + a.y*b.x);
 }
@@ -31,18 +53,6 @@ vec2 complex_exp(float coef){
 
 float dispersion(float k){
     return sqrt(GRAVITY_CONSTANT * k);
-}
-
-ivec2 nm_to_xy(ivec2 nm){
-    return ivec2(nm.x+N/2, nm.y+N/2);
-}
-
-ivec2 xy_to_nm(ivec2 xy){
-    return ivec2(xy.x-N/2, xy.y-N/2);
-}
-
-vec2 nm_to_k(ivec2 nm){
-    return vec2(2.0 * PI * nm.x / L, 2.0 * PI * nm.y / L);
 }
 
 void main(){

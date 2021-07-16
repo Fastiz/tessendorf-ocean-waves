@@ -23,12 +23,22 @@ uniform float A;
 uniform vec2 wind_dir;
 uniform float wind_speed;
 
+int alias(int a){
+    if(a > N/2) a -= N;
+    return a;
+}
+
+int ialias(int b){
+    if(b < 0) b += N;
+    return b;
+}
+
 ivec2 nm_to_xy(ivec2 nm){
-    return ivec2(nm.x+N/2, nm.y+N/2);
+    return ivec2(ialias(nm.x), ialias(nm.y));
 }
 
 ivec2 xy_to_nm(ivec2 xy){
-    return ivec2(xy.x-N/2, xy.y-N/2);
+    return ivec2(alias(xy.x), alias(xy.y));
 }
 
 vec2 nm_to_k(ivec2 nm){
