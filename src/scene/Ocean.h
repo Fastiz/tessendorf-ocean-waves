@@ -22,6 +22,7 @@ private:
 
     std::pair<textures::ssbo_pointer, textures::ssbo_pointer> spectrum_textures;
     textures::ssbo_pointer height_map;
+    std::pair<textures::ssbo_pointer, textures::ssbo_pointer> slope;
 
     int width, height, N;
     float L;

@@ -11,8 +11,7 @@ namespace utils {
 
     std::vector<std::array<glm::vec3, 3>> generate_triangle_normals(std::vector<std::array<glm::vec3, 3>> &triangles);
 
-    std::vector<float> generate_grid_buffer(std::vector<std::array<glm::vec3, 3>> &triangles,
-                                            std::vector<std::array<glm::vec3, 3>> &normals);
+    std::vector<float> generate_grid_buffer(std::vector<std::array<glm::vec3, 3>>& triangles);
 
     std::vector<std::array<glm::vec3, 3>> transform_grid_height(
             std::vector<std::array<glm::vec3, 3>> &triangles,

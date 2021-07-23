@@ -72,7 +72,7 @@ float philips_spectrum(float A, float L_, vec2 K, vec2 W){
 
     return A *
         exp(-1.0f / (kL_ * kL_) + -1.0f * k_lenght * k_lenght * l_min * l_min) *
-        dot * dot /
+        pow(abs(dot), 6.0f) /
         (k_lenght * k_lenght * k_lenght * k_lenght);
 }
 

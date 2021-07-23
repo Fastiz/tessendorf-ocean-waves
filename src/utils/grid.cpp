@@ -57,16 +57,13 @@ namespace utils {
         return normals;
     }
 
-    std::vector<float> generate_grid_buffer(std::vector<std::array<glm::vec3, 3>>& triangles, std::vector<std::array<glm::vec3, 3>>& normals){
+    std::vector<float> generate_grid_buffer(std::vector<std::array<glm::vec3, 3>>& triangles){
         std::vector<float> buffer;
 
-        for(int i=0; i<triangles.size(); i++){
+        for(auto & triangle : triangles){
             for(int j=0; j<3; j++){
                 for(int k=0; k<3; k++){
-                    buffer.push_back(triangles[i][j][k]);
-                }
-                for(int k=0; k<3; k++){
-                    buffer.push_back(normals[i][j][k]);
+                    buffer.push_back(triangle[j][k]);
                 }
             }
         }

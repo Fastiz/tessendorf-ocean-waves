@@ -9,7 +9,6 @@ uniform vec3 viewPos;
 
 in vec3 Normal;
 in vec3 FragPos;
-in float Valley;
 
 void main()
 {
@@ -31,5 +30,5 @@ void main()
     vec3 ambient = ambientStrength * lightColor;
 
     vec3 result = (specular + ambient + diffuse) * objectColor;
-    FragColor = vec4(result * Valley, 1.0);
+    FragColor = vec4(result, 1.0);
 }

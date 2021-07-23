@@ -10,14 +10,11 @@ Ocean::Ocean(int width, int height, int N, float L): width(width), height(height
 
     triangles = utils::generate_grid_mesh(width, height);
 
-    normals = utils::generate_triangle_normals(triangles);
-
-    std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles, normals);
+    std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles);
 
     vertexBuffer = std::make_unique<abstractions::VertexBuffer>(&vertices_buffer[0], vertices_buffer.size() * sizeof(float));
 
     layout = std::make_unique<VertexBufferLayout>();
-    layout->Push<float>(3);
     layout->Push<float>(3);
     vao->AddBuffer(*vertexBuffer, *layout);
 
@@ -35,7 +32,7 @@ Ocean::Ocean(int width, int height, int N, float L): width(width), height(height
 }
 
 void Ocean::OnRender(Camera& camera) {
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     Renderer renderer;
     renderer.Clear();
@@ -57,6 +54,8 @@ void Ocean::OnRender(Camera& camera) {
     shader->SetUniformMat4f("model", model);
 
     height_map->BindToSlot(0);
+    std::get<0>(slope)->BindToSlot(1);
+    std::get<1>(slope)->BindToSlot(2);
 
     renderer.DrawArrays(*vao, *shader, 0, width * height * 2 * 3);
 }
@@ -66,4 +65,5 @@ void Ocean::OnUpdate(double deltaTime) {
 
     textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), N, L, (float) elapsedTime);
     height_map = textures::update_fft_texture(h_k_t, N);
+    slope = textures::update_slope_texture(height_map, N, L);
 }
