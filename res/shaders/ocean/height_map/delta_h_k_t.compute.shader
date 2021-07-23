@@ -5,17 +5,17 @@
 
 layout(local_size_x = 1, local_size_y = 1) in;
 
-layout(std430, binding = 0) readonly buffer Block {
-    vec2 values[];
-} h0_txt;
-
-layout(std430, binding = 1) readonly buffer Block2 {
-    vec2 values[];
-} h0conj_txt;
-
-layout(std430, binding = 2) writeonly buffer Block3 {
-    vec2 values[];
+layout(std430, binding = 0) readonly buffer Block3 {
+vec2 values[];
 } h_k_t_txt;
+
+layout(std430, binding = 1) writeonly buffer Block1 {
+    vec2 values[];
+} delta_h_k_t_x_txt;
+
+layout(std430, binding = 2) writeonly buffer Block2 {
+    vec2 values[];
+} delta_h_k_t_y_txt;
 
 uniform float time;
 uniform int N;
@@ -51,25 +51,20 @@ vec2 complex_exp(float coef){
     return vec2(cos(coef), sin(coef));
 }
 
-float dispersion(float k){
-    return sqrt(GRAVITY_CONSTANT * k);
-}
-
 void main(){
     ivec2 coords = ivec2(gl_GlobalInvocationID.xy);
 
+    uint index = coords.x + coords.y*N;
+
     ivec2 nm = xy_to_nm(coords);
-
-    vec2 h0 = h0_txt.values[coords.x + coords.y*N];
-
-    ivec2 negative_coords = nm_to_xy(-nm);
-    vec2 h0conj = h0conj_txt.values[negative_coords.x + negative_coords.y*N];
 
     vec2 K = nm_to_k(nm);
 
-    float coef = time * dispersion(length(K));
+    vec2 h_k_t = h_k_t_txt.values[index];
 
-    vec2 h_k_t = complex_product(h0, complex_exp(coef)) + complex_product(h0conj, complex_exp(-coef));
+    vec2 iKx = vec2(0.0f, K.x);
+    delta_h_k_t_x_txt.values[index] = complex_product(iKx, h_k_t);
 
-    h_k_t_txt.values[coords.x + coords.y*N] = h_k_t;
+    vec2 iKy = vec2(0.0f, K.y);
+    delta_h_k_t_y_txt.values[index] = complex_product(iKy, h_k_t);
 }

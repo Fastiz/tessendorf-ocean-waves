@@ -42,4 +42,8 @@ unsigned int SSBO::GetRendererId() {
     return m_RendererID;
 }
 
+unsigned int SSBO::GetSize() const {
+    return size;
+}
+
 

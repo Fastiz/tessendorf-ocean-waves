@@ -26,6 +26,8 @@ namespace abstractions {
         void GetBufferData(void* data);
 
         unsigned int GetRendererId();
+
+        unsigned int GetSize() const;
     };
 }
 

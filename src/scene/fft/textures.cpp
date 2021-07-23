@@ -9,8 +9,8 @@
 #include <iostream>
 
 #define H0_COMPUTE_SHADER "../../res/shaders/ocean/height_map/h0.compute.shader"
-#define H0CONJ_COMPUTE_SHADER "../../res/shaders/ocean/height_map/h0conj.compute.shader"
 #define TRANSFORM_COMPUTE_SHADER "../../res/shaders/ocean/height_map/h_k_t.compute.shader"
+#define SLOPE_COMPUTE_SHADER "../../res/shaders/ocean/height_map/delta_h_k_t.compute.shader"
 
 namespace textures {
 
@@ -63,7 +63,28 @@ namespace textures {
         return out;
     }
 
-    std::shared_ptr<abstractions::SSBO> update_fft_texture(ssbo_pointer& h_k_t, int N){
+    std::pair<ssbo_pointer, ssbo_pointer> update_slope_texture(ssbo_pointer& h_k_t, int N, float L){
+        abstractions::ComputeShader slope_shader(SLOPE_COMPUTE_SHADER);
+
+        ssbo_pointer out_x(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
+        ssbo_pointer out_y(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
+
+        h_k_t->BindToSlot(0);
+        out_x->BindToSlot(1);
+        out_y->BindToSlot(2);
+
+        slope_shader.Bind();
+        slope_shader.SetUniform1i("N", N);
+        slope_shader.SetUniform1f("L", L);
+
+        abstractions::Computer computer;
+        computer.DispatchCompute(slope_shader, N, N, 1);
+        abstractions::Computer::MemoryBarrier();
+
+        return std::make_pair(std::move(out_x), std::move(out_y));
+    }
+
+    std::shared_ptr<abstractions::SSBO> update_fft_texture(ssbo_pointer& texture, int N){
         GLFFT::FFTOptions options;
         options.type.fp16 = false;
         options.type.output_fp16 = false;
@@ -77,7 +98,7 @@ namespace textures {
 
         std::shared_ptr<abstractions::SSBO> out(new abstractions::SSBO(nullptr, 4*N*N, GL_DYNAMIC_COPY));
 
-        input_texture = (*h_k_t).GetRendererId();
+        input_texture = (*texture).GetRendererId();
         output_texture = (*out).GetRendererId();
 
         // Adapt raw GL types to types which GLContext uses internally.
@@ -98,4 +119,5 @@ namespace textures {
 
         return out;
     }
+
 }

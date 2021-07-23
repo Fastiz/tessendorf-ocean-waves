@@ -12,7 +12,9 @@ namespace textures {
 
     ssbo_pointer generate_transform_texture(ssbo_pointer& h0, ssbo_pointer& h0conj, int N, float L, float t);
 
-    ssbo_pointer update_fft_texture(ssbo_pointer& h_k_t, int N);
+    std::pair<ssbo_pointer, ssbo_pointer> update_slope_texture(ssbo_pointer& h_k_t, int N, float L);
+
+    ssbo_pointer update_fft_texture(ssbo_pointer& texture, int N);
 }
 
 

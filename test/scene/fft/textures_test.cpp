@@ -1,5 +1,7 @@
 #include <scene/fft/textures.h>
 #include "textures_test.h"
+#include "../../test_utils.h"
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <stb_image_write.h>
 #include <utils/noise_texture.h>
@@ -8,106 +10,49 @@
 #define H0_TEXTURE_PATH "../../res/textures/test/fft/h0.png"
 #define H0CONJ_TEXTURE_PATH "../../res/textures/test/fft/h0conj.png"
 #define H_K_T_TEXTURE_PATH "../../res/textures/test/fft/h_k_t.png"
+#define SLOPE_SPECTRUM_X_TEXTURE_PATH "../../res/textures/test/fft/delta_h_k_t_x.png"
+#define SLOPE_SPECTRUM_Y_TEXTURE_PATH "../../res/textures/test/fft/delta_h_k_t_y.png"
 #define HEIGHT_MAP_TEXTURE_PATH "../../res/textures/test/fft/height_map.png"
+#define SLOPE_X_TEXTURE_PATH "../../res/textures/test/fft/slope_x.png"
+#define SLOPE_Y_TEXTURE_PATH "../../res/textures/test/fft/slope_y.png"
 
 namespace textures_test {
     void run(){
         h0_texture();
     }
 
-    std::vector<float> normalize(std::vector<float> values){
-        float max = std::numeric_limits<float>::lowest(), min = std::numeric_limits<float>::max();
-
-        for(float value : values){
-            if(value > max) max = value;
-            if(value < min) min = value;
-        }
-
-        std::vector<float> result(values.size());
-        for(int i=0; i<values.size(); i++){
-            result[i] = (values[i] - min) / (max - min);
-        }
-
-        return result;
-    }
-
-    std::vector<float> invert_odd_values(std::vector<float> values){
-        std::vector<float> result(values.size());
-
-        for(int i=0; i<values.size(); i++){
-            result[i] = i % 2 == 0 ? values[i] : -values[i];
-        }
-
-        return result;
-    }
-
-    // TODO: automatize testing and stop saving textures into files
 #define N 512
 #define L 1000
     void h0_texture(){
         auto noise_texture = utils::generate_noise_texture(N, N);
         auto textures = textures::generate_spectrum_textures(N, 1, 1.0f, 0.0f, 30.0f, L);
         textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(textures), std::get<1>(textures), N, L, 1.0);
+        auto slope_spectrum = textures::update_slope_texture(h_k_t, N, L);
+
         textures::ssbo_pointer height_map = textures::update_fft_texture(h_k_t, N);
+        textures::ssbo_pointer slope_x = textures::update_fft_texture(get<0>(slope_spectrum), N);
+        textures::ssbo_pointer slope_y = textures::update_fft_texture(get<1>(slope_spectrum), N);
+
+        test_utils::print_image(std::get<0>(textures), N, H0_TEXTURE_PATH, false, test_utils::image_type::COMPLEX);
+        test_utils::print_image(std::get<1>(textures), N, H0CONJ_TEXTURE_PATH, false, test_utils::image_type::COMPLEX);
+        test_utils::print_image(h_k_t, N, H_K_T_TEXTURE_PATH, false, test_utils::image_type::COMPLEX);
+        test_utils::print_image(get<0>(slope_spectrum), N, SLOPE_SPECTRUM_X_TEXTURE_PATH, false, test_utils::image_type::COMPLEX);
+        test_utils::print_image(get<1>(slope_spectrum), N, SLOPE_SPECTRUM_Y_TEXTURE_PATH, false, test_utils::image_type::COMPLEX);
+
+        test_utils::print_image(height_map, N, HEIGHT_MAP_TEXTURE_PATH, true, test_utils::image_type::BNW);
+        test_utils::print_image(slope_x, N, SLOPE_X_TEXTURE_PATH, true, test_utils::image_type::BNW);
+        test_utils::print_image(slope_y, N, SLOPE_Y_TEXTURE_PATH, true, test_utils::image_type::BNW);
 
         std::vector<float> noise = noise_texture.GetTextureImage(0);
-
-        std::vector<float> h0_values(N*N*2);
-        get<0>(textures)->GetBufferData(&h0_values[0]);
-        h0_values = normalize(h0_values);
-
-        std::vector<float> h0conj_values(N*N*2);
-        get<1>(textures)->GetBufferData(&h0conj_values[0]);
-        h0conj_values = normalize(h0conj_values);
-
-        std::vector<float> h_k_t_values(N*N*2);
-        h_k_t->GetBufferData(&h_k_t_values[0]);
-        h_k_t_values = normalize(h_k_t_values);
-
-        std::vector<float> height_map_values(N*N);
-        height_map->GetBufferData(&height_map_values[0]);
-//        height_map_values = invert_odd_values(height_map_values);
-        height_map_values = normalize(height_map_values);
-
         std::vector<unsigned char> noise_char_data(N * N * 4);
-        std::vector<unsigned char> h0_char_data(N * N * 4);
-        std::vector<unsigned char> h0conj_char_data(N * N * 4);
-        std::vector<unsigned char> h_k_t_char_data(N * N * 4);
-        std::vector<unsigned char> height_map_char_data(N * N * 4);
-
 
         for(int i=0; i<N*N; i++){
             noise_char_data[i*4] = (unsigned char)(noise[i*4] * 255);
             noise_char_data[i*4+1] = (unsigned char)(noise[i*4+1] * 255);
             noise_char_data[i*4+2] = 0;
             noise_char_data[i*4+3] = 255;
-
-            h0_char_data[i*4] = (unsigned char)(h0_values[i*2] * 255);
-            h0_char_data[i*4+1] = (unsigned char)(h0_values[i*2+1] * 255);
-            h0_char_data[i*4+2] = 0;
-            h0_char_data[i*4+3] = 255;
-
-            h0conj_char_data[i*4] = (unsigned char)(h0conj_values[i*2] * 255);
-            h0conj_char_data[i*4+1] = (unsigned char)(h0conj_values[i*2+1] * 255);
-            h0conj_char_data[i*4+2] = 0;
-            h0conj_char_data[i*4+3] = 255;
-
-            h_k_t_char_data[i*4] = (unsigned char)(h_k_t_values[i*2] * 255);
-            h_k_t_char_data[i*4+1] = (unsigned char)(h_k_t_values[i*2+1] * 255);
-            h_k_t_char_data[i*4+2] = 0;
-            h_k_t_char_data[i*4+3] = 255;
-
-            float value = height_map_values[i] * 255;
-            height_map_char_data[i*4] = (unsigned char)(value);
-            height_map_char_data[i*4+1] = (unsigned char)(value);
-            height_map_char_data[i*4+2] = (unsigned char)(value);
-            height_map_char_data[i*4+3] = 255;
         }
 
         stbi_write_png(NOISE_TEXTURE_PATH, N, N, 4, &noise_char_data[0], N * 4);
-        stbi_write_png(H0_TEXTURE_PATH, N, N, 4, &h0_char_data[0], N * 4);
-        stbi_write_png(H0CONJ_TEXTURE_PATH, N, N, 4, &h0conj_char_data[0], N * 4);
-        stbi_write_png(H_K_T_TEXTURE_PATH, N, N, 4, &h_k_t_char_data[0], N * 4);
-        stbi_write_png(HEIGHT_MAP_TEXTURE_PATH, N, N, 4, &height_map_char_data[0], N * 4);
     }
 }
