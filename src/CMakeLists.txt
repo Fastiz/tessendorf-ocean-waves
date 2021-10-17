@@ -1,7 +1,3 @@
-find_package(glfw3 3.3 REQUIRED)
-
-find_package(GLEW REQUIRED)
-
 set(SOURCE_FILES Application.cpp)
 
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "*.h" "*.cpp" "*.hpp")
@@ -14,7 +10,7 @@ target_link_libraries(ocean_water_simulation imgui)
 
 target_link_libraries(ocean_water_simulation glfw)
 
-target_link_libraries(ocean_water_simulation GLEW)
+target_link_libraries(ocean_water_simulation libglew_static)
 
 target_link_libraries(ocean_water_simulation GLFFT)
 

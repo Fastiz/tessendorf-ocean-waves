@@ -3,7 +3,7 @@
 #include "./noise_texture.h"
 
 namespace utils {
-    abstractions::Texture generate_noise_texture(int width, int height){
+    std::unique_ptr<abstractions::Texture> generate_noise_texture(int width, int height){
         std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
 
         std::uniform_real_distribution<double> distribution(0.0,1.0);
@@ -17,8 +17,8 @@ namespace utils {
             buffer[off + 1] = (float) distribution(generator);
         }
 
-        abstractions::Texture texture(&buffer[0], width, height);
+        std::unique_ptr<abstractions::Texture> texture(new abstractions::Texture(&buffer[0], width, height));
 
-        return texture;
+        return std::move(texture);
     }
 }

@@ -20,12 +20,12 @@ namespace textures {
         std::unique_ptr<abstractions::SSBO> h0(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
         std::unique_ptr<abstractions::SSBO> h0conj(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
 
-        abstractions::Texture noise_texture = utils::generate_noise_texture(N, N);
+        std::unique_ptr<abstractions::Texture> noise_texture = utils::generate_noise_texture(N, N);
 
         (*h0).BindToSlot(0);
         (*h0conj).BindToSlot(1);
 
-        noise_texture.BindImageTexture(2);
+        noise_texture->BindImageTexture(2);
 
         h0_shader.Bind();
         h0_shader.SetUniform1f("A", A);

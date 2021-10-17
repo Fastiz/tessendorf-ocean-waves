@@ -10,3 +10,9 @@
 [submodule "submodules/GLFFT"]
 	path = submodules/GLFFT
 	url = https://github.com/Themaister/GLFFT.git
+[submodule "submodules/glfw"]
+	path = submodules/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "submodules/GLEW"]
+	path = submodules/GLEW
+	url = https://github.com/Perlmint/glew-cmake.git

@@ -6,9 +6,16 @@ project(ocean_water_simulation)
 
 include_directories(submodules/includes)
 
+# GLFW
+add_subdirectory(submodules/glfw)
+include_directories(submodules/glfw/include)
+
+# GLEW
+add_subdirectory(submodules/GLEW)
+include_directories(submodules/GLEW/include)
+
 # GLM LIBRARY
-file(GLOB_RECURSE GLM_SOURCE_FILES CONFIGURE_DEPENDS "submodules/glm/glm/*.h" "submodules/glm/glm/*.cpp" "submodules/glm/glm/*.hpp")
-add_library(glm ${GLM_SOURCE_FILES})
+add_subdirectory(submodules/glm)
 include_directories(submodules/glm)
 
 # STB LIBRARY
@@ -38,6 +45,11 @@ set(CMAKE_CXX_STANDARD 11)
 file(GLOB GLFFT_SOURCE_FILES submodules/GLFFT/*.cpp)
 add_library(GLFFT ${GLFFT_SOURCE_FILES})
 include_directories(submodules/GLFFT)
+add_custom_command(
+        OUTPUT submodules/GLFFT/glsl
+        WORKING_DIR submodules/GLFFT/glsl
+        COMMAND make
+)
 
 set(CMAKE_CXX_STANDARD 20)
 

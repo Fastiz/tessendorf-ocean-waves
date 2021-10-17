@@ -23,7 +23,6 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 
-
 #define GLFFT_GLSL_LANG_STRING "#version 450 core\n"
 #define GLFFT_LOG_OVERRIDE printf
 #define GLFFT_TIME_OVERRIDE glfwGetTime

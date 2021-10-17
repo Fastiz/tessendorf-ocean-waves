@@ -6,6 +6,11 @@
 #include "VertexArray.h"
 #include "Shader.h"
 #include "IndexBuffer.h"
+#include <csignal>
+
+#ifndef SIGTRAP
+#define SIGTRAP 5
+#endif
 
 #define ASSERT(x) if (!(x)) raise(SIGTRAP);
 #define GLCall(x) GLClearError(); \

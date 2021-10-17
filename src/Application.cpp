@@ -37,6 +37,8 @@ int main()
     if(glewInit() != GLEW_OK)
         std::cout << "Error!" << std::endl;
 
+    std::cout << glGetString(GL_VERSION) << std::endl;
+
     OceanScene oceanScene;
 
     Scene& scene = oceanScene;
