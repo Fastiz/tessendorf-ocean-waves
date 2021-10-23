@@ -42,7 +42,9 @@ glm::mat4 Camera::GetProj() const {
 
 void Camera::OnProcessInput(GLFWwindow *window) {
     Camera::KeyboardInput(window);
-    Camera::MouseInput(window);
+
+    if(captured)
+        Camera::MouseInput(window);
 }
 
 void Camera::KeyboardInput(GLFWwindow *window) {

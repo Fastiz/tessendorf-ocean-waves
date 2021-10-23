@@ -1,11 +1,16 @@
 #include <iostream>
+#include <imgui.h>
 #include "Ocean.h"
 #include "../utils/grid.h"
 #include "../components/Camera.h"
 #include "../abstractions/RenderingShader.h"
 
+#define VERTEX_SHADER_PATH "../../res/shaders/ocean/PBR/pbr.vertex.shader"
+#define FRAGMENT_SHADER_PATH "../../res/shaders/ocean/PBR/pbr.fragment.shader"
 
-Ocean::Ocean(int width, int height, int N, float L): width(width), height(height), N(N), L(L) {
+Ocean::Ocean(int width, int height, int N, float L): width(width), height(height),
+    N(N), L(L), metallic(0.5f), ao(0.5f), roughness(0.5f), lightColor(1.0f, 1.0f, 1.0f), albedo(0.1f, 0.1f, 1.0f)
+{
     vao = std::make_unique<abstractions::VertexArray>();
 
     triangles = utils::generate_grid_mesh(width, height);
@@ -19,14 +24,20 @@ Ocean::Ocean(int width, int height, int N, float L): width(width), height(height
     vao->AddBuffer(*vertexBuffer, *layout);
 
     shader = std::make_unique<abstractions::RenderingShader>(
-            "../../res/shaders/BasicLighting/vertex.shader",
-            "../../res/shaders/BasicLighting/fragment.shader");
+            VERTEX_SHADER_PATH,
+            FRAGMENT_SHADER_PATH);
     shader->Bind();
 
-    shader->SetUniform3f("objectColor", 0.31f, 0.5f, 1.0f);
-    shader->SetUniform3f("lightColor", 1.0f, 1.0f, 1.0f);
+    // VERTEX
     shader->SetUniform1i("N", N);
     shader->SetUniform1f("L", L);
+
+    // FRAGMENT
+    shader->SetUniform3f("albedo", albedo[0], albedo[1], albedo[2]);
+    shader->SetUniform1f("metallic", metallic);
+    shader->SetUniform1f("roughness", roughness);
+    shader->SetUniform1f("ao", ao);
+    shader->SetUniform3f("lightColor", lightColor[0], lightColor[1], lightColor[2]);
 
     spectrum_textures = textures::generate_spectrum_textures(N, L, 1.0f, 0.0f, 50.0f, L);
 }
@@ -45,7 +56,7 @@ void Ocean::OnRender(Camera& camera) {
     shader->SetUniform3f("viewPos", cameraPos[0], cameraPos[1], cameraPos[2]);
 
     glm::vec3 lightPos = {10.0f, 20.0f, 10.0f};
-    shader->SetUniform3f("lightPos", lightPos[0], lightPos[1], lightPos[2]);
+    shader->SetUniform3f("lightPosition", lightPos[0], lightPos[1], lightPos[2]);
 
     glm::mat4 model = glm::mat4(1.0f);
     float scale = 0.5f;
@@ -66,4 +77,39 @@ void Ocean::OnUpdate(double deltaTime) {
     textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), N, L, (float) elapsedTime);
     height_map = textures::update_fft_texture(h_k_t, N);
     slope = textures::update_slope_texture(height_map, N, L);
+}
+
+void Ocean::OnImGuiRender() {
+    ImGui::Begin("PBR Parameters");
+
+    bool result;
+
+    shader->Bind();
+
+    result = ImGui::ColorEdit3("Albedo", reinterpret_cast<float *>(&albedo));
+    if(result){
+        shader->SetUniform3f("albedo", albedo[0], albedo[1], albedo[2]);
+    }
+
+    result = ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f);
+    if(result){
+        shader->SetUniform1f("metallic", metallic);
+    }
+
+    result = ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+    if(result){
+        shader->SetUniform1f("roughness", roughness);
+    }
+
+    result = ImGui::SliderFloat("Ambient occlusion", &ao, 0.0f, 1.0f);
+    if(result){
+        shader->SetUniform1f("ao", ao);
+    }
+
+    result = ImGui::ColorEdit3("Light color", reinterpret_cast<float *>(&lightColor));
+    if(result){
+        shader->SetUniform3f("lightColor", lightColor[0], lightColor[1], lightColor[2]);
+    }
+
+    ImGui::End();
 }

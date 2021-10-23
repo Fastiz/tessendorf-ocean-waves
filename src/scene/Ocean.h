@@ -28,12 +28,17 @@ private:
     float L;
 
     double elapsedTime = 0;
+
+    float metallic, ao, roughness;
+    glm::vec3 lightColor, albedo;
 public:
     Ocean(int width, int height, int N, float L);
 
     void OnRender(Camera& camera) override;
 
     void OnUpdate(double deltaTime) override;
+
+    void OnImGuiRender();
 };
 
 #endif //OPENGL_TEST_OCEAN_H
