@@ -22,7 +22,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(960, 540, "Ocean Simulation", nullptr, nullptr);
+    window = glfwCreateWindow(1980, 1024, "Ocean Simulation", glfwGetPrimaryMonitor(), nullptr);
     if (!window)
     {
         glfwTerminate();

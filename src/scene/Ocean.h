@@ -11,6 +11,15 @@
 #include "../abstractions/SSBO.h"
 #include "./fft/textures.h"
 
+struct Material {
+    float metallic, ao, roughness;
+    glm::vec3 lightColor, albedo;
+};
+struct TessendorfProperties {
+    int width, height, N;
+    float L;
+};
+
 class Ocean : public Node {
 private:
     std::unique_ptr<abstractions::Shader> shader;
@@ -24,21 +33,22 @@ private:
     textures::ssbo_pointer height_map;
     std::pair<textures::ssbo_pointer, textures::ssbo_pointer> slope;
 
-    int width, height, N;
-    float L;
-
     double elapsedTime = 0;
 
-    float metallic, ao, roughness;
-    glm::vec3 lightColor, albedo;
+    struct TessendorfProperties tessendorfProperties;
+    struct Material material;
 public:
-    Ocean(int width, int height, int N, float L);
+    Ocean(TessendorfProperties tessendorfProperties, Material material);
 
     void OnRender(Camera& camera) override;
 
     void OnUpdate(double deltaTime) override;
 
-    void OnImGuiRender();
+    void SetTessendorfProperties(TessendorfProperties tessendorfProperties);
+    void SetMaterial(Material material);
+private:
+    void initializeSpectrumTextures();
+    void initializePBRShader();
 };
 
 #endif //OPENGL_TEST_OCEAN_H

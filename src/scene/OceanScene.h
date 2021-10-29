@@ -6,11 +6,16 @@
 #include <memory>
 #include "../components/Scene.h"
 #include "../components/Camera.h"
+#include "Ocean.h"
 
 class OceanScene : public Scene {
 private:
     Camera camera;
-    std::vector<std::unique_ptr<Node>> children;
+    std::shared_ptr<Ocean> ocean;
+    std::vector<std::shared_ptr<Node>> children;
+    TessendorfProperties tessendorfProperties;
+    Material material;
+    bool isLineMode;
 public:
     OceanScene();
 
@@ -21,6 +26,10 @@ public:
     void OnImGuiRender() override;
 
     void OnProcessInput(GLFWwindow* window) override;
+private:
+    void OnPBRGuiRender();
+    void OnTessendorfGuiRender();
+    void OnOtherConfigGuiRender();
 };
 
 

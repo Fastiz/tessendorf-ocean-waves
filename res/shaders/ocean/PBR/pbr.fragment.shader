@@ -1,6 +1,6 @@
 //https://learnopengl.com/PBR/Lighting
 
-#version 330 core
+#version 450 core
 
 out vec4 FragColor;
 
@@ -17,7 +17,7 @@ uniform float ao;
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
 
-uniform vec3 camPos;
+uniform vec3 viewPos;
 
 const float PI = 3.14159265359;
 
@@ -60,7 +60,7 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 void main()
 {
     vec3 N = normalize(Normal);
-    vec3 V = normalize(camPos - WorldPos);
+    vec3 V = normalize(viewPos - WorldPos);
 
     vec3 F0 = vec3(0.04);
     F0 = mix(F0, albedo, metallic);
@@ -71,7 +71,7 @@ void main()
     // calculate per-light radiance
     vec3 L = normalize(lightPosition - WorldPos);
     vec3 H = normalize(V + L);
-    float distance    = length(lightPosition - WorldPos);
+    float distance    = length(lightPosition - WorldPos) / 8000; // MODIFIED
     float attenuation = 1.0 / (distance * distance);
     vec3 radiance     = lightColor * attenuation;
 

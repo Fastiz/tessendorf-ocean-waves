@@ -5,15 +5,15 @@
 #include "../components/Camera.h"
 #include "../abstractions/RenderingShader.h"
 
-#define VERTEX_SHADER_PATH "../../res/shaders/ocean/PBR/pbr.vertex.shader"
-#define FRAGMENT_SHADER_PATH "../../res/shaders/ocean/PBR/pbr.fragment.shader"
+#define VERTEX_SHADER_PATH      "../../res/shaders/ocean/PBR/pbr.vertex.shader"
+#define FRAGMENT_SHADER_PATH    "../../res/shaders/ocean/PBR/pbr.fragment.shader"
 
-Ocean::Ocean(int width, int height, int N, float L): width(width), height(height),
-    N(N), L(L), metallic(0.5f), ao(0.5f), roughness(0.5f), lightColor(1.0f, 1.0f, 1.0f), albedo(0.1f, 0.1f, 1.0f)
+Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material)
+    : tessendorfProperties(tessendorfProperties), material(material)
 {
     vao = std::make_unique<abstractions::VertexArray>();
 
-    triangles = utils::generate_grid_mesh(width, height);
+    triangles = utils::generate_grid_mesh(tessendorfProperties.width, tessendorfProperties.height);
 
     std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles);
 
@@ -23,28 +23,11 @@ Ocean::Ocean(int width, int height, int N, float L): width(width), height(height
     layout->Push<float>(3);
     vao->AddBuffer(*vertexBuffer, *layout);
 
-    shader = std::make_unique<abstractions::RenderingShader>(
-            VERTEX_SHADER_PATH,
-            FRAGMENT_SHADER_PATH);
-    shader->Bind();
-
-    // VERTEX
-    shader->SetUniform1i("N", N);
-    shader->SetUniform1f("L", L);
-
-    // FRAGMENT
-    shader->SetUniform3f("albedo", albedo[0], albedo[1], albedo[2]);
-    shader->SetUniform1f("metallic", metallic);
-    shader->SetUniform1f("roughness", roughness);
-    shader->SetUniform1f("ao", ao);
-    shader->SetUniform3f("lightColor", lightColor[0], lightColor[1], lightColor[2]);
-
-    spectrum_textures = textures::generate_spectrum_textures(N, L, 1.0f, 0.0f, 50.0f, L);
+    initializePBRShader();
+    initializeSpectrumTextures();
 }
 
 void Ocean::OnRender(Camera& camera) {
-//    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     Renderer renderer;
     renderer.Clear();
 
@@ -55,12 +38,12 @@ void Ocean::OnRender(Camera& camera) {
     glm::vec3 cameraPos = camera.GetCameraPos();
     shader->SetUniform3f("viewPos", cameraPos[0], cameraPos[1], cameraPos[2]);
 
-    glm::vec3 lightPos = {10.0f, 20.0f, 10.0f};
+    glm::vec3 lightPos = {0.0f, 10000.0f, 0.0f};
     shader->SetUniform3f("lightPosition", lightPos[0], lightPos[1], lightPos[2]);
 
     glm::mat4 model = glm::mat4(1.0f);
     float scale = 0.5f;
-    float dx = (float)L / (float)N;
+    float dx = (float) tessendorfProperties.L / (float)tessendorfProperties.N;
     model = glm::scale(model, glm::vec3(dx * scale, scale, dx * scale));
     shader->SetUniformMat4f("model", model);
 
@@ -68,48 +51,46 @@ void Ocean::OnRender(Camera& camera) {
     std::get<0>(slope)->BindToSlot(1);
     std::get<1>(slope)->BindToSlot(2);
 
-    renderer.DrawArrays(*vao, *shader, 0, width * height * 2 * 3);
+    renderer.DrawArrays(*vao, *shader, 0, tessendorfProperties.width * tessendorfProperties.height * 2 * 3);
 }
 
 void Ocean::OnUpdate(double deltaTime) {
     elapsedTime += deltaTime;
 
-    textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), N, L, (float) elapsedTime);
-    height_map = textures::update_fft_texture(h_k_t, N);
-    slope = textures::update_slope_texture(height_map, N, L);
+    textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), tessendorfProperties.N, tessendorfProperties.L, (float) elapsedTime);
+    height_map = textures::update_fft_texture(h_k_t, tessendorfProperties.N);
+    slope = textures::update_slope_texture(height_map, tessendorfProperties.N, tessendorfProperties.L);
 }
 
-void Ocean::OnImGuiRender() {
-    ImGui::Begin("PBR Parameters");
+void Ocean::initializeSpectrumTextures() {
+    spectrum_textures = textures::generate_spectrum_textures(tessendorfProperties.N, tessendorfProperties.L, 1.0f, 0.0f, 50.0f, tessendorfProperties.L);
+}
 
-    bool result;
-
+void Ocean::initializePBRShader() {
+    shader = std::make_unique<abstractions::RenderingShader>(
+            VERTEX_SHADER_PATH,
+            FRAGMENT_SHADER_PATH);
     shader->Bind();
 
-    result = ImGui::ColorEdit3("Albedo", reinterpret_cast<float *>(&albedo));
-    if(result){
-        shader->SetUniform3f("albedo", albedo[0], albedo[1], albedo[2]);
-    }
+    // VERTEX
+    shader->SetUniform1i("N", tessendorfProperties.N);
+    shader->SetUniform1f("L", tessendorfProperties.L);
 
-    result = ImGui::SliderFloat("Metallic", &metallic, 0.0f, 1.0f);
-    if(result){
-        shader->SetUniform1f("metallic", metallic);
-    }
+    // FRAGMENT
+    shader->SetUniform3f("albedo", material.albedo[0], material.albedo[1], material.albedo[2]);
+    shader->SetUniform1f("metallic", material.metallic);
+    shader->SetUniform1f("roughness", material.roughness);
+    shader->SetUniform1f("ao", material.ao);
+    shader->SetUniform3f("lightColor", material.lightColor[0], material.lightColor[1], material.lightColor[2]);
+}
 
-    result = ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
-    if(result){
-        shader->SetUniform1f("roughness", roughness);
-    }
+void Ocean::SetTessendorfProperties(TessendorfProperties _tessendorfProperties) {
+    this->tessendorfProperties = _tessendorfProperties;
+    initializePBRShader();
+    initializeSpectrumTextures();
+}
 
-    result = ImGui::SliderFloat("Ambient occlusion", &ao, 0.0f, 1.0f);
-    if(result){
-        shader->SetUniform1f("ao", ao);
-    }
-
-    result = ImGui::ColorEdit3("Light color", reinterpret_cast<float *>(&lightColor));
-    if(result){
-        shader->SetUniform3f("lightColor", lightColor[0], lightColor[1], lightColor[2]);
-    }
-
-    ImGui::End();
+void Ocean::SetMaterial(Material _material) {
+    this->material = _material;
+    initializePBRShader();
 }

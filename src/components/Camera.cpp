@@ -15,7 +15,7 @@ Camera::Camera()
         )
     ),
     proj(
-        glm::perspective(glm::radians(45.f), 800.0f / 600.0f, 0.1f, 1000.0f)
+        glm::perspective(glm::radians(45.f), 800.0f / 600.0f, 0.1f, 10000.0f)
     ),
     captured(false),
     firstMouse(true),
@@ -53,8 +53,10 @@ void Camera::KeyboardInput(GLFWwindow *window) {
     else
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         captured = false;
+        firstMouse = true;
+    }
     if(glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
         captured = true;
 
