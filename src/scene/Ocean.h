@@ -16,8 +16,11 @@ struct Material {
     glm::vec3 lightColor, albedo;
 };
 struct TessendorfProperties {
-    int width, height, N;
+    int N;
     float L;
+    float A;
+    glm::vec2 windDirection;
+    float windSpeed;
 };
 
 class Ocean : public Node {

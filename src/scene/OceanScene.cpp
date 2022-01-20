@@ -8,7 +8,7 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false) {
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 
-    this->tessendorfProperties = { .width = 1024, .height = 1024, .N = 512, .L = 1000 };
+    this->tessendorfProperties = { .N = 512, .L = 1000, .A = 500.0f, .windDirection = {1.0f, 0.0f}, .windSpeed = 50.0f };
     this->material = {
             .metallic = 0.5f,
             .ao = 0.5f,
@@ -83,16 +83,17 @@ void OceanScene::OnPBRGuiRender() {
 void OceanScene::OnTessendorfGuiRender() {
     ImGui::Begin("Tessendorf Parameters");
 
-    bool result = false;
+    bool result;
 
     int power = std::log2(tessendorfProperties.N);
-    bool resultN = ImGui::SliderInt("N", &power, 8, 10);
-    if(resultN)
+    result = ImGui::SliderInt("N", &power, 8, 10);
+    if(result)
         tessendorfProperties.N = 1 << power;
-    result = resultN || result;
+
     result = ImGui::SliderFloat("L", &tessendorfProperties.L, 256, 2048) || result;
-    result = ImGui::SliderInt("width", &tessendorfProperties.width, 256, 2024) || result;
-    result = ImGui::SliderInt("height", &tessendorfProperties.height, 256, 2024) || result;
+    result = ImGui::SliderFloat("A", &tessendorfProperties.A, 1.0f, 1000.0f) || result;
+    result = ImGui::SliderFloat2("Wind direction", (float*) &tessendorfProperties.windDirection, -1.0f, 1.0f) || result;
+    result = ImGui::SliderFloat("Wind speed", &tessendorfProperties.windSpeed, 1.0f, 1000.0f) || result;
 
     ImGui::End();
 

@@ -6,6 +6,7 @@ out vec4 FragColor;
 
 in vec3 WorldPos;
 in vec3 Normal;
+in float IsBorder;
 
 // material parameters
 uniform vec3  albedo;
@@ -59,6 +60,11 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 
 void main()
 {
+    if(IsBorder > 0.1){
+        FragColor = vec4(0.0, 1.0, 1.0, 1.0);
+        return;
+    }
+
     vec3 N = normalize(Normal);
     vec3 V = normalize(viewPos - WorldPos);
 

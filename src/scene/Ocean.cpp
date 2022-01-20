@@ -13,7 +13,7 @@ Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material)
 {
     vao = std::make_unique<abstractions::VertexArray>();
 
-    triangles = utils::generate_grid_mesh(tessendorfProperties.width, tessendorfProperties.height);
+    triangles = utils::generate_grid_mesh(tessendorfProperties.N, tessendorfProperties.N);
 
     std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles);
 
@@ -42,16 +42,14 @@ void Ocean::OnRender(Camera& camera) {
     shader->SetUniform3f("lightPosition", lightPos[0], lightPos[1], lightPos[2]);
 
     glm::mat4 model = glm::mat4(1.0f);
-    float scale = 0.5f;
-    float dx = (float) tessendorfProperties.L / (float)tessendorfProperties.N;
-    model = glm::scale(model, glm::vec3(dx * scale, scale, dx * scale));
+    model = glm::scale(model, glm::vec3(0.2f));
     shader->SetUniformMat4f("model", model);
 
     height_map->BindToSlot(0);
     std::get<0>(slope)->BindToSlot(1);
     std::get<1>(slope)->BindToSlot(2);
 
-    renderer.DrawArrays(*vao, *shader, 0, tessendorfProperties.width * tessendorfProperties.height * 2 * 3);
+    renderer.DrawArrays(*vao, *shader, 0, tessendorfProperties.N * tessendorfProperties.N * 2 * 3);
 }
 
 void Ocean::OnUpdate(double deltaTime) {
@@ -63,7 +61,14 @@ void Ocean::OnUpdate(double deltaTime) {
 }
 
 void Ocean::initializeSpectrumTextures() {
-    spectrum_textures = textures::generate_spectrum_textures(tessendorfProperties.N, tessendorfProperties.L, 1.0f, 0.0f, 50.0f, tessendorfProperties.L);
+    spectrum_textures = textures::generate_spectrum_textures(
+            tessendorfProperties.N,
+            tessendorfProperties.A,
+            tessendorfProperties.windDirection.x,
+            tessendorfProperties.windDirection.y,
+            tessendorfProperties.windSpeed,
+            tessendorfProperties.L
+            );
 }
 
 void Ocean::initializePBRShader() {

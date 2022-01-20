@@ -20,7 +20,7 @@ Camera::Camera()
     captured(false),
     firstMouse(true),
     cameraSpeed(0.0f, 0.0f, 0.0f), cameraUp(0.0f, 1.0f, 0.0f),
-    cameraFront(0.0f, 0.0f, -1.0f), cameraPos(0.0f, 0.0f, 3.0f),
+    cameraFront(0.57f, -0.79f, 0.22f), cameraPos(-45.25f, 116.94f, 12.15f),
     lastX(400), lastY(300), yaw(-90.0f), pitch(0.0f)
 {
 
