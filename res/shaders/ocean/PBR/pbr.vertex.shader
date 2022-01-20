@@ -21,12 +21,15 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 proj;
 
+uniform float showBorder;
+
 out vec3 Normal;
 out vec3 WorldPos;
 out float IsBorder;
 
 int ssbo_index(ivec2 coords){
-    return coords.x % N + (coords.y % N)*N;
+    ivec2 normCoords = coords % N;
+    return normCoords.x + normCoords.y * N;
 }
 
 float get_height(ivec2 coords){
@@ -64,5 +67,5 @@ void main()
 
     WorldPos = vec3(model * vec4(pos, 1.0));
 
-    IsBorder = coords.x == 0 || coords.y == 0 || coords.x == N || coords.y == N ? 1.0 : 0.0;
+    IsBorder = (showBorder > 0.5) && (coords.x % N == 0 || coords.y % N == 0) ? 1.0 : 0.0;
 }

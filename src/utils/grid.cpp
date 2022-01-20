@@ -20,6 +20,7 @@ namespace utils {
             int height
     ){
         std::vector<std::array<glm::vec3, 3>> triangles;
+        triangles.reserve((height+1) * (width+1) * 2);
         for(int z = 0; z <= height - 1; z++) {
             for (int x = 0; x <= width - 1; x++) {
                 std::array<glm::vec3, 3> right{};

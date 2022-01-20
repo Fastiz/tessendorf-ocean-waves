@@ -8,21 +8,10 @@
 #define VERTEX_SHADER_PATH      "../../res/shaders/ocean/PBR/pbr.vertex.shader"
 #define FRAGMENT_SHADER_PATH    "../../res/shaders/ocean/PBR/pbr.fragment.shader"
 
-Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material)
-    : tessendorfProperties(tessendorfProperties), material(material)
+Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder)
+    : tessendorfProperties(tessendorfProperties), material(material), tilingSize(tilingSize), showBorder(isShowBorder)
 {
-    vao = std::make_unique<abstractions::VertexArray>();
-
-    triangles = utils::generate_grid_mesh(tessendorfProperties.N, tessendorfProperties.N);
-
-    std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles);
-
-    vertexBuffer = std::make_unique<abstractions::VertexBuffer>(&vertices_buffer[0], vertices_buffer.size() * sizeof(float));
-
-    layout = std::make_unique<VertexBufferLayout>();
-    layout->Push<float>(3);
-    vao->AddBuffer(*vertexBuffer, *layout);
-
+    initializeVertexBuffer();
     initializePBRShader();
     initializeSpectrumTextures();
 }
@@ -49,7 +38,7 @@ void Ocean::OnRender(Camera& camera) {
     std::get<0>(slope)->BindToSlot(1);
     std::get<1>(slope)->BindToSlot(2);
 
-    renderer.DrawArrays(*vao, *shader, 0, tessendorfProperties.N * tessendorfProperties.N * 2 * 3);
+    renderer.DrawArrays(*vao, *shader, 0, tilingSize * tilingSize * tessendorfProperties.N * tessendorfProperties.N * 2 * 3);
 }
 
 void Ocean::OnUpdate(double deltaTime) {
@@ -80,6 +69,7 @@ void Ocean::initializePBRShader() {
     // VERTEX
     shader->SetUniform1i("N", tessendorfProperties.N);
     shader->SetUniform1f("L", tessendorfProperties.L);
+    shader->SetUniform1f("showBorder", showBorder);
 
     // FRAGMENT
     shader->SetUniform3f("albedo", material.albedo[0], material.albedo[1], material.albedo[2]);
@@ -95,7 +85,32 @@ void Ocean::SetTessendorfProperties(TessendorfProperties _tessendorfProperties) 
     initializeSpectrumTextures();
 }
 
+void Ocean::SetTiling(unsigned int size){
+    tilingSize = size;
+    initializeVertexBuffer();
+}
+
 void Ocean::SetMaterial(Material _material) {
     this->material = _material;
     initializePBRShader();
+}
+
+void Ocean::initializeVertexBuffer() {
+    vao = std::make_unique<abstractions::VertexArray>();
+
+    triangles = utils::generate_grid_mesh(tessendorfProperties.N * tilingSize, tessendorfProperties.N * tilingSize);
+
+    std::vector<float> vertices_buffer = utils::generate_grid_buffer(triangles);
+
+    vertexBuffer = std::make_unique<abstractions::VertexBuffer>(&vertices_buffer[0], vertices_buffer.size() * sizeof(float));
+
+    layout = std::make_unique<VertexBufferLayout>();
+    layout->Push<float>(3);
+    vao->AddBuffer(*vertexBuffer, *layout);
+}
+
+void Ocean::SetShowBorder(bool show) {
+    showBorder = show;
+    shader->Bind();
+    shader->SetUniform1f("showBorder", show);
 }

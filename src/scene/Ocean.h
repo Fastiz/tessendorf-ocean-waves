@@ -40,8 +40,10 @@ private:
 
     struct TessendorfProperties tessendorfProperties;
     struct Material material;
+    unsigned int tilingSize;
+    bool showBorder;
 public:
-    Ocean(TessendorfProperties tessendorfProperties, Material material);
+    Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder);
 
     void OnRender(Camera& camera) override;
 
@@ -49,9 +51,12 @@ public:
 
     void SetTessendorfProperties(TessendorfProperties tessendorfProperties);
     void SetMaterial(Material material);
+    void SetTiling(unsigned int tilingSize);
+    void SetShowBorder(bool show);
 private:
     void initializeSpectrumTextures();
     void initializePBRShader();
+    void initializeVertexBuffer();
 };
 
 #endif //OPENGL_TEST_OCEAN_H

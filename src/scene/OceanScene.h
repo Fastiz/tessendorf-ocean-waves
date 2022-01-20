@@ -16,6 +16,8 @@ private:
     TessendorfProperties tessendorfProperties;
     Material material;
     bool isLineMode;
+    int tilingSize;
+    bool isShowBorder;
 public:
     OceanScene();
 

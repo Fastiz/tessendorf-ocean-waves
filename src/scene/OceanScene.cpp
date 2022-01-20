@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <imgui.h>
 
-OceanScene::OceanScene(): camera(), children(), isLineMode(false) {
+OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1), isShowBorder(true) {
     GLCall(glEnable(GL_DEPTH_TEST))
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
@@ -16,7 +16,7 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false) {
             .lightColor = { 1.0f, 1.0f, 1.0f },
             .albedo = { 0.0f, 0.0f, 1.0f }
     };
-    std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(tessendorfProperties, material);
+    std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(tessendorfProperties, material, tilingSize, isShowBorder);
     ocean = ptr;
     children.push_back(ptr);
 }
@@ -105,7 +105,13 @@ void OceanScene::OnTessendorfGuiRender() {
 void OceanScene::OnOtherConfigGuiRender() {
     ImGui::Begin("Other Parameters");
 
-    bool modified = ImGui::Checkbox("Line mode", &isLineMode);
+    ImGui::Checkbox("Line mode", &isLineMode);
+
+    if(ImGui::SliderInt("Tiling size", &tilingSize, 1, 10))
+        ocean->SetTiling(tilingSize);
+
+    if(ImGui::Checkbox("Show tile border", &isShowBorder))
+        ocean->SetShowBorder(isShowBorder);
 
     ImGui::End();
 
