@@ -40,8 +40,8 @@ namespace textures_test {
         test_utils::print_image(get<1>(slope_spectrum), N, SLOPE_SPECTRUM_Y_TEXTURE_PATH, false, test_utils::image_type::COMPLEX);
 
         test_utils::print_image(height_map, N, HEIGHT_MAP_TEXTURE_PATH, true, test_utils::image_type::BNW);
-        test_utils::print_image(slope_x, N, SLOPE_X_TEXTURE_PATH, true, test_utils::image_type::BNW);
-        test_utils::print_image(slope_y, N, SLOPE_Y_TEXTURE_PATH, true, test_utils::image_type::BNW);
+        test_utils::print_image(slope_x, N, SLOPE_X_TEXTURE_PATH, false, test_utils::image_type::BNW);
+        test_utils::print_image(slope_y, N, SLOPE_Y_TEXTURE_PATH, false, test_utils::image_type::BNW);
 
         std::vector<float> noise = noise_texture->GetTextureImage(0);
         std::vector<unsigned char> noise_char_data(N * N * 4);

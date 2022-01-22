@@ -8,8 +8,8 @@
 #define VERTEX_SHADER_PATH      "../../res/shaders/ocean/PBR/pbr.vertex.shader"
 #define FRAGMENT_SHADER_PATH    "../../res/shaders/ocean/PBR/pbr.fragment.shader"
 
-Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder)
-    : tessendorfProperties(tessendorfProperties), material(material), tilingSize(tilingSize), showBorder(isShowBorder)
+Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale)
+    : tessendorfProperties(tessendorfProperties), material(material), tilingSize(tilingSize), showBorder(isShowBorder), choppyWavesLambda(choppyWavesLambda), timeScale(timeScale)
 {
     initializeVertexBuffer();
     initializePBRShader();
@@ -43,7 +43,7 @@ void Ocean::OnRender(Camera& camera) {
 }
 
 void Ocean::OnUpdate(double deltaTime) {
-    elapsedTime += deltaTime;
+    elapsedTime += deltaTime * timeScale;
 
     textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), tessendorfProperties.N, tessendorfProperties.L, (float) elapsedTime);
     height_map = textures::update_fft_texture(h_k_t, tessendorfProperties.N);
@@ -78,7 +78,7 @@ void Ocean::initializePBRShader() {
     shader->SetUniform1i("N", tessendorfProperties.N);
     shader->SetUniform1f("L", tessendorfProperties.L);
     shader->SetUniform1f("showBorder", showBorder);
-    shader->SetUniform1f("lambda", tessendorfProperties.lambda);
+    shader->SetUniform1f("lambda", choppyWavesLambda);
 
     // FRAGMENT
     shader->SetUniform3f("albedo", material.albedo[0], material.albedo[1], material.albedo[2]);
@@ -122,4 +122,15 @@ void Ocean::SetShowBorder(bool show) {
     showBorder = show;
     shader->Bind();
     shader->SetUniform1f("showBorder", show);
+}
+
+void Ocean::SetChoppyWavesLambda(float lambda) {
+    choppyWavesLambda = lambda;
+
+    shader->Bind();
+    shader->SetUniform1f("lambda", lambda);
+}
+
+void Ocean::SetTimeScale(float timeScale_) {
+    this->timeScale = timeScale_;
 }

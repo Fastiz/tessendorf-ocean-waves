@@ -63,9 +63,9 @@ void main(){
 
     vec2 h_k_t = h_k_t_txt.values[index];
 
-    vec2 iKx = vec2(0.0f, -K.x);
+    vec2 iKx = vec2(0.0f, K.x);
     delta_h_k_t_x_txt.values[index] = k == 0 ? vec2(0.0f) : complex_product(iKx, h_k_t) / k;
 
-    vec2 iKy = vec2(0.0f, -K.y);
+    vec2 iKy = vec2(0.0f, K.y);
     delta_h_k_t_y_txt.values[index] = k == 0 ? vec2(0.0f) : complex_product(iKy, h_k_t) / k;
 }

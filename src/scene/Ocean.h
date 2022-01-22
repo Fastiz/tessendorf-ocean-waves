@@ -23,7 +23,6 @@ struct TessendorfProperties {
     float A;
     glm::vec2 windDirection;
     float windSpeed;
-    float lambda;
 };
 
 class Ocean : public Node {
@@ -45,8 +44,10 @@ private:
     struct Material material;
     unsigned int tilingSize;
     bool showBorder;
+    float choppyWavesLambda;
+    float timeScale;
 public:
-    Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder);
+    Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale);
 
     void OnRender(Camera& camera) override;
 
@@ -56,6 +57,8 @@ public:
     void SetMaterial(Material material);
     void SetTiling(unsigned int tilingSize);
     void SetShowBorder(bool show);
+    void SetChoppyWavesLambda(float lambda);
+    void SetTimeScale(float timeScale_);
 private:
     void initializeSpectrumTextures();
     void initializePBRShader();

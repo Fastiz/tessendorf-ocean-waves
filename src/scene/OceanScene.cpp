@@ -3,7 +3,7 @@
 #include <glm/vec3.hpp>
 #include <imgui.h>
 
-OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1), isShowBorder(true) {
+OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1), isShowBorder(true), choppyWavesLambda(1.0f), timeScale(1.0f) {
     GLCall(glEnable(GL_DEPTH_TEST))
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
@@ -14,7 +14,6 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1)
             .A = 500.0f,
             .windDirection = {1.0f, 0.0f},
             .windSpeed = 50.0f,
-            .lambda = 1.0f
     };
 
     this->material = {
@@ -23,10 +22,10 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1)
             .roughness = 0.5f,
             .lightColor = { 1.0f, 1.0f, 1.0f },
             .albedo = { 0.0f, 0.0f, 1.0f },
-            .lightPosition = {0.0f, 20.0f, 0.0f},
-            .lightAttenuationScale = 500.0f
+            .lightPosition = {0.0f, 160.0f, 0.0f},
+            .lightAttenuationScale = 750.0f
     };
-    std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(tessendorfProperties, material, tilingSize, isShowBorder);
+    std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(tessendorfProperties, material, tilingSize, isShowBorder, choppyWavesLambda, timeScale);
     ocean = ptr;
     children.push_back(ptr);
 }
@@ -51,13 +50,11 @@ void OceanScene::OnRender() {
 }
 
 void OceanScene::OnImGuiRender() {
-    ImGui::Begin("Configuration");
 
     OnOtherConfigGuiRender();
     OnPBRGuiRender();
     OnTessendorfGuiRender();
 
-    ImGui::End();
 
     for(auto& node : children){
         node->OnImGuiRender();
@@ -110,7 +107,10 @@ void OceanScene::OnTessendorfGuiRender() {
     result = ImGui::SliderFloat("A", &tessendorfProperties.A, 1.0f, 1000.0f) || result;
     result = ImGui::SliderFloat2("Wind direction", (float*) &tessendorfProperties.windDirection, -1.0f, 1.0f) || result;
     result = ImGui::SliderFloat("Wind speed", &tessendorfProperties.windSpeed, 1.0f, 1000.0f) || result;
-    result = ImGui::SliderFloat("Displacement lambda", &tessendorfProperties.lambda, 0.0f, 10.0f) || result;
+
+    if(ImGui::SliderFloat("Displacement lambda", &choppyWavesLambda, 0.0f, 10.0f)){
+        ocean->SetChoppyWavesLambda(choppyWavesLambda);
+    }
 
     ImGui::End();
 
@@ -120,15 +120,22 @@ void OceanScene::OnTessendorfGuiRender() {
 }
 
 void OceanScene::OnOtherConfigGuiRender() {
-    ImGui::Begin("Other Parameters");
+    ImGui::Begin("Configuration");
+
+    ImGui::Text("Tiling");
+    if(ImGui::SliderInt("Size", &tilingSize, 1, 10))
+        ocean->SetTiling(tilingSize);
+
+    if(ImGui::Checkbox("Show border", &isShowBorder))
+        ocean->SetShowBorder(isShowBorder);
+
+    ImGui::Separator();
+    ImGui::Text("Other");
 
     ImGui::Checkbox("Line mode", &isLineMode);
 
-    if(ImGui::SliderInt("Tiling size", &tilingSize, 1, 10))
-        ocean->SetTiling(tilingSize);
-
-    if(ImGui::Checkbox("Show tile border", &isShowBorder))
-        ocean->SetShowBorder(isShowBorder);
+    if(ImGui::SliderFloat("Time scale", &timeScale, 0.001f, 100.0f))
+        ocean->SetTimeScale(timeScale);
 
     ImGui::End();
 

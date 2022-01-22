@@ -18,6 +18,8 @@ private:
     bool isLineMode;
     int tilingSize;
     bool isShowBorder;
+    float choppyWavesLambda;
+    float timeScale;
 public:
     OceanScene();
 
