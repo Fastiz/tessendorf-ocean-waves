@@ -8,13 +8,23 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1)
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 
-    this->tessendorfProperties = { .N = 512, .L = 1000, .A = 500.0f, .windDirection = {1.0f, 0.0f}, .windSpeed = 50.0f, .lambda = 1.0f };
+    this->tessendorfProperties = {
+            .N = 512,
+            .L = 1000,
+            .A = 500.0f,
+            .windDirection = {1.0f, 0.0f},
+            .windSpeed = 50.0f,
+            .lambda = 1.0f
+    };
+
     this->material = {
             .metallic = 0.5f,
             .ao = 0.5f,
             .roughness = 0.5f,
             .lightColor = { 1.0f, 1.0f, 1.0f },
-            .albedo = { 0.0f, 0.0f, 1.0f }
+            .albedo = { 0.0f, 0.0f, 1.0f },
+            .lightPosition = {0.0f, 20.0f, 0.0f},
+            .lightAttenuationScale = 500.0f
     };
     std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(tessendorfProperties, material, tilingSize, isShowBorder);
     ocean = ptr;
@@ -67,11 +77,17 @@ void OceanScene::OnPBRGuiRender() {
 
     bool result = false;
 
+    ImGui::Text("Material");
     result = ImGui::ColorEdit3("Albedo", reinterpret_cast<float *>(&material.albedo)) || result;
     result = ImGui::SliderFloat("Metallic", &material.metallic, 0.0f, 1.0f) || result;
     result = ImGui::SliderFloat("Roughness", &material.roughness, 0.0f, 1.0f) || result;
     result = ImGui::SliderFloat("Ambient occlusion", &material.ao, 0.0f, 1.0f) || result;
-    result = ImGui::ColorEdit3("Light color", reinterpret_cast<float *>(&material.lightColor)) || result;
+
+    ImGui::Separator();
+    ImGui::Text("Light");
+    result = ImGui::ColorEdit3("Color", reinterpret_cast<float *>(&material.lightColor)) || result;
+    result = ImGui::SliderFloat3("Position", reinterpret_cast<float *>(&material.lightPosition), 0.0f, 1000.0f) || result;
+    result = ImGui::SliderFloat("Attenuation scale", &material.lightAttenuationScale, 1.0f, 10000.0f) || result;
 
     ImGui::End();
 

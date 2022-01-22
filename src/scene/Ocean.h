@@ -14,6 +14,8 @@
 struct Material {
     float metallic, ao, roughness;
     glm::vec3 lightColor, albedo;
+    glm::vec3 lightPosition;
+    float lightAttenuationScale;
 };
 struct TessendorfProperties {
     int N;

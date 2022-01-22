@@ -27,8 +27,9 @@ void Ocean::OnRender(Camera& camera) {
     glm::vec3 cameraPos = camera.GetCameraPos();
     shader->SetUniform3f("viewPos", cameraPos[0], cameraPos[1], cameraPos[2]);
 
-    glm::vec3 lightPos = {0.0f, 10000.0f, 0.0f};
-    shader->SetUniform3f("lightPosition", lightPos[0], lightPos[1], lightPos[2]);
+    shader->SetUniform3f("lightPosition", material.lightPosition[0], material.lightPosition[1], material.lightPosition[2]);
+
+    shader->SetUniform1f("lightAttenuationScale", material.lightAttenuationScale);
 
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(0.2f));

@@ -20,6 +20,8 @@ uniform float ao;
 uniform vec3 lightPosition;
 uniform vec3 lightColor;
 
+uniform float lightAttenuationScale;
+
 uniform vec3 viewPos;
 
 const float PI = 3.14159265359;
@@ -80,7 +82,7 @@ void main()
     // calculate per-light radiance
     vec3 L = normalize(lightPosition - WorldPos);
     vec3 H = normalize(V + L);
-    float distance    = length(lightPosition - WorldPos) / 8000; // MODIFIED
+    float distance    = length(lightPosition - WorldPos) / lightAttenuationScale;
     float attenuation = 1.0 / (distance * distance);
     vec3 radiance     = lightColor * attenuation;
 

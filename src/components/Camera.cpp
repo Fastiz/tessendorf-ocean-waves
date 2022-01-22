@@ -61,7 +61,7 @@ void Camera::KeyboardInput(GLFWwindow *window) {
         captured = true;
 
     cameraSpeed = glm::vec3(0.0f);
-    float cameraSpeedMagnitude = 4.0f; // adjust accordingly
+    float cameraSpeedMagnitude = 50.0f; // adjust accordingly
     if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         cameraSpeedMagnitude *= 2;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
