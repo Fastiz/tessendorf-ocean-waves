@@ -8,8 +8,17 @@
 #define VERTEX_SHADER_PATH      "../../res/shaders/ocean/PBR/pbr.vertex.shader"
 #define FRAGMENT_SHADER_PATH    "../../res/shaders/ocean/PBR/pbr.fragment.shader"
 
-Ocean::Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale)
-    : tessendorfProperties(tessendorfProperties), material(material), tilingSize(tilingSize), showBorder(isShowBorder), choppyWavesLambda(choppyWavesLambda), timeScale(timeScale)
+Ocean::Ocean(
+        TessendorfProperties tessendorfProperties,
+        Material material,
+        unsigned int tilingSize,
+        bool isShowBorder,
+        float choppyWavesLambda,
+        float timeScale,
+        float oceanScale
+        )
+    : tessendorfProperties(tessendorfProperties), material(material), tilingSize(tilingSize),
+    showBorder(isShowBorder), choppyWavesLambda(choppyWavesLambda), timeScale(timeScale), oceanScale(oceanScale)
 {
     initializeVertexBuffer();
     initializePBRShader();
@@ -32,7 +41,7 @@ void Ocean::OnRender(Camera& camera) {
     shader->SetUniform1f("lightAttenuationScale", material.lightAttenuationScale);
 
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(0.2f));
+    model = glm::scale(model, glm::vec3(oceanScale / tessendorfProperties.L));
     shader->SetUniformMat4f("model", model);
 
     height_map->BindToSlot(0);
@@ -89,9 +98,14 @@ void Ocean::initializePBRShader() {
 }
 
 void Ocean::SetTessendorfProperties(TessendorfProperties _tessendorfProperties) {
+    bool isNChanged = _tessendorfProperties.N != tessendorfProperties.N;
+
     this->tessendorfProperties = _tessendorfProperties;
-    initializePBRShader();
+    if(isNChanged)
+        initializeVertexBuffer();
+
     initializeSpectrumTextures();
+    initializePBRShader();
 }
 
 void Ocean::SetTiling(unsigned int size){
@@ -133,4 +147,8 @@ void Ocean::SetChoppyWavesLambda(float lambda) {
 
 void Ocean::SetTimeScale(float timeScale_) {
     this->timeScale = timeScale_;
+}
+
+void Ocean::SetOceanScale(float oceanScale) {
+    this->oceanScale = oceanScale;
 }

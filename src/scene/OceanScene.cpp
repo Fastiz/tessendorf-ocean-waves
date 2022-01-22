@@ -3,13 +3,16 @@
 #include <glm/vec3.hpp>
 #include <imgui.h>
 
-OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1), isShowBorder(true), choppyWavesLambda(1.0f), timeScale(1.0f) {
+OceanScene::OceanScene():
+camera(), children(), isLineMode(false), tilingSize(1), isShowBorder(true), choppyWavesLambda(1.0f), timeScale(1.0f),
+oceanScale(100.0f)
+{
     GLCall(glEnable(GL_DEPTH_TEST))
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 
     this->tessendorfProperties = {
-            .N = 512,
+            .N = 256,
             .L = 1000,
             .A = 500.0f,
             .windDirection = {1.0f, 0.0f},
@@ -25,7 +28,15 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1)
             .lightPosition = {0.0f, 160.0f, 0.0f},
             .lightAttenuationScale = 750.0f
     };
-    std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(tessendorfProperties, material, tilingSize, isShowBorder, choppyWavesLambda, timeScale);
+    std::shared_ptr<Ocean> ptr = std::make_shared<Ocean>(
+            tessendorfProperties,
+            material,
+            tilingSize,
+            isShowBorder,
+            choppyWavesLambda,
+            timeScale,
+            oceanScale
+            );
     ocean = ptr;
     children.push_back(ptr);
 }
@@ -99,11 +110,11 @@ void OceanScene::OnTessendorfGuiRender() {
     bool result;
 
     int power = std::log2(tessendorfProperties.N);
-    result = ImGui::SliderInt("N", &power, 8, 10);
+    result = ImGui::SliderInt("N", &power, 6, 10);
     if(result)
         tessendorfProperties.N = 1 << power;
 
-    result = ImGui::SliderFloat("L", &tessendorfProperties.L, 256, 2048) || result;
+    result = ImGui::SliderFloat("L", &tessendorfProperties.L, 256, 16384) || result;
     result = ImGui::SliderFloat("A", &tessendorfProperties.A, 1.0f, 1000.0f) || result;
     result = ImGui::SliderFloat2("Wind direction", (float*) &tessendorfProperties.windDirection, -1.0f, 1.0f) || result;
     result = ImGui::SliderFloat("Wind speed", &tessendorfProperties.windSpeed, 1.0f, 1000.0f) || result;
@@ -136,6 +147,9 @@ void OceanScene::OnOtherConfigGuiRender() {
 
     if(ImGui::SliderFloat("Time scale", &timeScale, 0.001f, 100.0f))
         ocean->SetTimeScale(timeScale);
+
+    if(ImGui::SliderFloat("Ocean scale", &oceanScale, 100.0f, 1000.0f))
+        ocean->SetOceanScale(oceanScale);
 
     ImGui::End();
 

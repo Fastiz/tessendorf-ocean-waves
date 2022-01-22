@@ -46,8 +46,9 @@ private:
     bool showBorder;
     float choppyWavesLambda;
     float timeScale;
+    float oceanScale;
 public:
-    Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale);
+    Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale, float oceanScale);
 
     void OnRender(Camera& camera) override;
 
@@ -59,6 +60,7 @@ public:
     void SetShowBorder(bool show);
     void SetChoppyWavesLambda(float lambda);
     void SetTimeScale(float timeScale_);
+    void SetOceanScale(float oceanScale);
 private:
     void initializeSpectrumTextures();
     void initializePBRShader();

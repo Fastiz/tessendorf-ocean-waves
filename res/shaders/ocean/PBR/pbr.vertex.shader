@@ -76,11 +76,14 @@ void main()
     pos.y = get_height(coords);
     Normal = get_normal(coords);
 
+    pos.xz *= L / N;
     pos.xz += lambda * get_displacement(coords);
 
-    gl_Position = proj * view * model * vec4(pos, 1.0);
+    vec4 modelCoords = model * vec4(pos, 1.0);
 
-    WorldPos = vec3(model * vec4(pos, 1.0));
+    gl_Position = proj * view * modelCoords;
+
+    WorldPos = vec3(modelCoords);
 
     IsBorder = (showBorder > 0.5) && (coords.x % N == 0 || coords.y % N == 0) ? 1.0 : 0.0;
 }

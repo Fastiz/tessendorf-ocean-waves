@@ -20,6 +20,7 @@ private:
     bool isShowBorder;
     float choppyWavesLambda;
     float timeScale;
+    float oceanScale;
 public:
     OceanScene();
 
