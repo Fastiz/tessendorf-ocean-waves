@@ -21,6 +21,7 @@ struct TessendorfProperties {
     float A;
     glm::vec2 windDirection;
     float windSpeed;
+    float lambda;
 };
 
 class Ocean : public Node {

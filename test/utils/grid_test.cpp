@@ -16,7 +16,7 @@ namespace grid_test {
         std::vector<std::array<glm::vec3, 3>> triangles = utils::generate_grid_mesh(width, height);
         std::vector<std::array<glm::vec3, 3>> normals = utils::generate_triangle_normals(triangles);
 
-        const float EPSILON = 0.00000001;
+        const double EPSILON = 0.00000001;
 
         for(auto& triangle_normals : normals){
             for(auto& normal : triangle_normals){
@@ -32,9 +32,11 @@ namespace grid_test {
         std::vector<std::array<glm::vec3, 3>> triangles = utils::generate_grid_mesh(width, height);
         std::vector<std::array<glm::vec3, 3>> normals = utils::generate_triangle_normals(triangles);
 
-        std::vector<float> buffer = utils::generate_grid_buffer(triangles, normals);
+        std::vector<float> buffer = utils::generate_grid_buffer(triangles);
 
-        IS_TRUE(buffer.size() == height * height * 2 * 3 * 3 * 2)
+        unsigned int buffer_size = buffer.size();
+
+        IS_TRUE(buffer.size() == width * height * 2 * 3 * 3)
     }
 
     void run(){

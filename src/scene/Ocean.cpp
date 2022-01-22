@@ -38,7 +38,7 @@ void Ocean::OnRender(Camera& camera) {
     std::get<0>(slope)->BindToSlot(1);
     std::get<1>(slope)->BindToSlot(2);
 
-    renderer.DrawArrays(*vao, *shader, 0, tilingSize * tilingSize * tessendorfProperties.N * tessendorfProperties.N * 2 * 3);
+    renderer.DrawArrays(*vao, *shader, 0, tilingSize * tilingSize * tessendorfProperties.N * tessendorfProperties.N * 2 * 3 * 3);
 }
 
 void Ocean::OnUpdate(double deltaTime) {
@@ -46,7 +46,14 @@ void Ocean::OnUpdate(double deltaTime) {
 
     textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), tessendorfProperties.N, tessendorfProperties.L, (float) elapsedTime);
     height_map = textures::update_fft_texture(h_k_t, tessendorfProperties.N);
-    slope = textures::update_slope_texture(height_map, tessendorfProperties.N, tessendorfProperties.L);
+
+    std::pair<textures::ssbo_pointer, textures::ssbo_pointer>
+            displacement = textures::update_slope_texture(h_k_t, tessendorfProperties.N, tessendorfProperties.L);
+
+    slope = std::make_pair(
+            textures::update_fft_texture(std::get<0>(displacement), tessendorfProperties.N),
+            textures::update_fft_texture(std::get<1>(displacement), tessendorfProperties.N)
+            );
 }
 
 void Ocean::initializeSpectrumTextures() {
@@ -70,6 +77,7 @@ void Ocean::initializePBRShader() {
     shader->SetUniform1i("N", tessendorfProperties.N);
     shader->SetUniform1f("L", tessendorfProperties.L);
     shader->SetUniform1f("showBorder", showBorder);
+    shader->SetUniform1f("lambda", tessendorfProperties.lambda);
 
     // FRAGMENT
     shader->SetUniform3f("albedo", material.albedo[0], material.albedo[1], material.albedo[2]);

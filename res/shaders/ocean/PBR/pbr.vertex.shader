@@ -23,13 +23,26 @@ uniform mat4 proj;
 
 uniform float showBorder;
 
+uniform float lambda;
+
 out vec3 Normal;
 out vec3 WorldPos;
 out float IsBorder;
 
+out vec3 Debug;
+
 int ssbo_index(ivec2 coords){
     ivec2 normCoords = coords % N;
     return normCoords.x + normCoords.y * N;
+}
+
+vec2 get_displacement(ivec2 coords){
+    int index = ssbo_index(coords.xy);
+
+    float x = height_map_x_slope.values[index];
+    float y = height_map_y_slope.values[index];
+
+    return vec2(x, y);
 }
 
 float get_height(ivec2 coords){
@@ -62,6 +75,8 @@ void main()
 
     pos.y = get_height(coords);
     Normal = get_normal(coords);
+
+    pos.xz += lambda * get_displacement(coords);
 
     gl_Position = proj * view * model * vec4(pos, 1.0);
 

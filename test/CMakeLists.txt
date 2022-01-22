@@ -25,9 +25,11 @@ add_executable(Test ${SOURCE_FILES} ${SOURCES}) # which files should produce exe
 
 target_link_libraries(Test Src)
 
+target_link_libraries(Test imgui)
+
 target_link_libraries(Test glfw)
 
-target_link_libraries(Test GLEW)
+target_link_libraries(Test libglew_static)
 
 target_link_libraries(Test GLFFT)
 

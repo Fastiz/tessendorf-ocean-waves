@@ -8,7 +8,7 @@ OceanScene::OceanScene(): camera(), children(), isLineMode(false), tilingSize(1)
     GLCall(glEnable(GL_BLEND))
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
 
-    this->tessendorfProperties = { .N = 512, .L = 1000, .A = 500.0f, .windDirection = {1.0f, 0.0f}, .windSpeed = 50.0f };
+    this->tessendorfProperties = { .N = 512, .L = 1000, .A = 500.0f, .windDirection = {1.0f, 0.0f}, .windSpeed = 50.0f, .lambda = 1.0f };
     this->material = {
             .metallic = 0.5f,
             .ao = 0.5f,
@@ -94,6 +94,7 @@ void OceanScene::OnTessendorfGuiRender() {
     result = ImGui::SliderFloat("A", &tessendorfProperties.A, 1.0f, 1000.0f) || result;
     result = ImGui::SliderFloat2("Wind direction", (float*) &tessendorfProperties.windDirection, -1.0f, 1.0f) || result;
     result = ImGui::SliderFloat("Wind speed", &tessendorfProperties.windSpeed, 1.0f, 1000.0f) || result;
+    result = ImGui::SliderFloat("Displacement lambda", &tessendorfProperties.lambda, 0.0f, 10.0f) || result;
 
     ImGui::End();
 

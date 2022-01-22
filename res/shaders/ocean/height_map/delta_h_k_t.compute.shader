@@ -6,7 +6,7 @@
 layout(local_size_x = 1, local_size_y = 1) in;
 
 layout(std430, binding = 0) readonly buffer Block3 {
-vec2 values[];
+    vec2 values[];
 } h_k_t_txt;
 
 layout(std430, binding = 1) writeonly buffer Block1 {
@@ -59,12 +59,13 @@ void main(){
     ivec2 nm = xy_to_nm(coords);
 
     vec2 K = nm_to_k(nm);
+    float k = length(K);
 
     vec2 h_k_t = h_k_t_txt.values[index];
 
-    vec2 iKx = vec2(0.0f, K.x);
-    delta_h_k_t_x_txt.values[index] = complex_product(iKx, h_k_t);
+    vec2 iKx = vec2(0.0f, -K.x);
+    delta_h_k_t_x_txt.values[index] = k == 0 ? vec2(0.0f) : complex_product(iKx, h_k_t) / k;
 
-    vec2 iKy = vec2(0.0f, K.y);
-    delta_h_k_t_y_txt.values[index] = complex_product(iKy, h_k_t);
+    vec2 iKy = vec2(0.0f, -K.y);
+    delta_h_k_t_y_txt.values[index] = k == 0 ? vec2(0.0f) : complex_product(iKy, h_k_t) / k;
 }

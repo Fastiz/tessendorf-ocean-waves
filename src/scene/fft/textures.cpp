@@ -17,8 +17,8 @@ namespace textures {
     std::pair<ssbo_pointer, ssbo_pointer> generate_spectrum_textures(int N, float A, float wind_x, float wind_y, float wind_speed, float L){
         abstractions::ComputeShader h0_shader(H0_COMPUTE_SHADER);
 
-        std::unique_ptr<abstractions::SSBO> h0(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
-        std::unique_ptr<abstractions::SSBO> h0conj(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
+        std::unique_ptr<abstractions::SSBO> h0(new abstractions::SSBO(nullptr, 2*sizeof(float)*N*N, GL_DYNAMIC_COPY));
+        std::unique_ptr<abstractions::SSBO> h0conj(new abstractions::SSBO(nullptr, 2*sizeof(float)*N*N, GL_DYNAMIC_COPY));
 
         std::unique_ptr<abstractions::Texture> noise_texture = utils::generate_noise_texture(N, N);
 
@@ -45,7 +45,7 @@ namespace textures {
     ssbo_pointer generate_transform_texture(ssbo_pointer& h0, ssbo_pointer& h0conj, int N, float L, float t){
         abstractions::ComputeShader transform_shader(TRANSFORM_COMPUTE_SHADER);
 
-        ssbo_pointer out(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
+        ssbo_pointer out(new abstractions::SSBO(nullptr, 2*sizeof(float)*N*N, GL_DYNAMIC_COPY));
 
         (*h0).BindToSlot(0);
         (*h0conj).BindToSlot(1);
@@ -66,13 +66,12 @@ namespace textures {
     std::pair<ssbo_pointer, ssbo_pointer> update_slope_texture(ssbo_pointer& h_k_t, int N, float L){
         abstractions::ComputeShader slope_shader(SLOPE_COMPUTE_SHADER);
 
-        ssbo_pointer out_x(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
-        ssbo_pointer out_y(new abstractions::SSBO(nullptr, 2*4*N*N, GL_DYNAMIC_COPY));
+        ssbo_pointer out_x(new abstractions::SSBO(nullptr, 2*sizeof(float)*N*N, GL_DYNAMIC_COPY));
+        ssbo_pointer out_y(new abstractions::SSBO(nullptr, 2*sizeof(float)*N*N, GL_DYNAMIC_COPY));
 
         h_k_t->BindToSlot(0);
         out_x->BindToSlot(1);
         out_y->BindToSlot(2);
-
         slope_shader.Bind();
         slope_shader.SetUniform1i("N", N);
         slope_shader.SetUniform1f("L", L);
@@ -96,7 +95,7 @@ namespace textures {
 
         GLuint output_texture, input_texture;
 
-        std::shared_ptr<abstractions::SSBO> out(new abstractions::SSBO(nullptr, 4*N*N, GL_DYNAMIC_COPY));
+        std::shared_ptr<abstractions::SSBO> out(new abstractions::SSBO(nullptr, 2*sizeof(float)*N*N, GL_DYNAMIC_COPY));
 
         input_texture = (*texture).GetRendererId();
         output_texture = (*out).GetRendererId();
