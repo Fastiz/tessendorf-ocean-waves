@@ -25,7 +25,7 @@ struct TessendorfProperties {
     float windSpeed;
 };
 
-class Ocean : public Node {
+class OceanFFT : public Node {
 private:
     std::unique_ptr<abstractions::Shader> shader;
     std::unique_ptr<abstractions::VertexBuffer> vertexBuffer;
@@ -48,7 +48,7 @@ private:
     float timeScale;
     float oceanScale;
 public:
-    Ocean(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale, float oceanScale);
+    OceanFFT(TessendorfProperties tessendorfProperties, Material material, unsigned int tilingSize, bool isShowBorder, float choppyWavesLambda, float timeScale, float oceanScale);
 
     void OnRender(Camera& camera) override;
 

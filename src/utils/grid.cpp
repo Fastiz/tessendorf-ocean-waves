@@ -16,8 +16,8 @@ namespace utils {
     }
 
     std::vector<std::array<glm::vec3, 3>> generate_grid_mesh(
-            int width,
-            int height
+            unsigned int width,
+            unsigned int height
     ){
         std::vector<std::array<glm::vec3, 3>> triangles;
         triangles.reserve((height+1) * (width+1) * 2);

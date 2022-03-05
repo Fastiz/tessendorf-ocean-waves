@@ -16,7 +16,7 @@ int initialize_opengl(){
         return -1;
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(960, 540, "Ocean Simulation Test", nullptr, nullptr);
+    window = glfwCreateWindow(960, 540, "OceanFFT Simulation Test", nullptr, nullptr);
     if (!window)
     {
         glfwTerminate();

@@ -7,7 +7,7 @@
 #include <glm/vec3.hpp>
 
 namespace utils {
-    std::vector<std::array<glm::vec3, 3>> generate_grid_mesh(int width, int height);
+    std::vector<std::array<glm::vec3, 3>> generate_grid_mesh(unsigned int width, unsigned int height);
 
     std::vector<std::array<glm::vec3, 3>> generate_triangle_normals(std::vector<std::array<glm::vec3, 3>> &triangles);
 

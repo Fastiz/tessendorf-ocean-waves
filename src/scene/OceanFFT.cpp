@@ -1,6 +1,6 @@
 #include <iostream>
 #include <imgui.h>
-#include "Ocean.h"
+#include "OceanFFT.h"
 #include "../utils/grid.h"
 #include "../components/Camera.h"
 #include "../abstractions/RenderingShader.h"
@@ -8,7 +8,7 @@
 #define VERTEX_SHADER_PATH      "../../res/shaders/ocean/PBR/pbr.vertex.shader"
 #define FRAGMENT_SHADER_PATH    "../../res/shaders/ocean/PBR/pbr.fragment.shader"
 
-Ocean::Ocean(
+OceanFFT::OceanFFT(
         TessendorfProperties tessendorfProperties,
         Material material,
         unsigned int tilingSize,
@@ -25,7 +25,7 @@ Ocean::Ocean(
     initializeSpectrumTextures();
 }
 
-void Ocean::OnRender(Camera& camera) {
+void OceanFFT::OnRender(Camera& camera) {
     Renderer renderer;
     renderer.Clear();
 
@@ -51,7 +51,7 @@ void Ocean::OnRender(Camera& camera) {
     renderer.DrawArrays(*vao, *shader, 0, tilingSize * tilingSize * tessendorfProperties.N * tessendorfProperties.N * 2 * 3 * 3);
 }
 
-void Ocean::OnUpdate(double deltaTime) {
+void OceanFFT::OnUpdate(double deltaTime) {
     elapsedTime += deltaTime * timeScale;
 
     textures::ssbo_pointer h_k_t = textures::generate_transform_texture(std::get<0>(spectrum_textures), std::get<1>(spectrum_textures), tessendorfProperties.N, tessendorfProperties.L, (float) elapsedTime);
@@ -66,7 +66,7 @@ void Ocean::OnUpdate(double deltaTime) {
             );
 }
 
-void Ocean::initializeSpectrumTextures() {
+void OceanFFT::initializeSpectrumTextures() {
     spectrum_textures = textures::generate_spectrum_textures(
             tessendorfProperties.N,
             tessendorfProperties.A,
@@ -77,7 +77,7 @@ void Ocean::initializeSpectrumTextures() {
             );
 }
 
-void Ocean::initializePBRShader() {
+void OceanFFT::initializePBRShader() {
     shader = std::make_unique<abstractions::RenderingShader>(
             VERTEX_SHADER_PATH,
             FRAGMENT_SHADER_PATH);
@@ -97,7 +97,7 @@ void Ocean::initializePBRShader() {
     shader->SetUniform3f("lightColor", material.lightColor[0], material.lightColor[1], material.lightColor[2]);
 }
 
-void Ocean::SetTessendorfProperties(TessendorfProperties _tessendorfProperties) {
+void OceanFFT::SetTessendorfProperties(TessendorfProperties _tessendorfProperties) {
     bool isNChanged = _tessendorfProperties.N != tessendorfProperties.N;
 
     this->tessendorfProperties = _tessendorfProperties;
@@ -108,17 +108,17 @@ void Ocean::SetTessendorfProperties(TessendorfProperties _tessendorfProperties) 
     initializePBRShader();
 }
 
-void Ocean::SetTiling(unsigned int size){
+void OceanFFT::SetTiling(unsigned int size){
     tilingSize = size;
     initializeVertexBuffer();
 }
 
-void Ocean::SetMaterial(Material _material) {
+void OceanFFT::SetMaterial(Material _material) {
     this->material = _material;
     initializePBRShader();
 }
 
-void Ocean::initializeVertexBuffer() {
+void OceanFFT::initializeVertexBuffer() {
     vao = std::make_unique<abstractions::VertexArray>();
 
     triangles = utils::generate_grid_mesh(tessendorfProperties.N * tilingSize, tessendorfProperties.N * tilingSize);
@@ -132,23 +132,23 @@ void Ocean::initializeVertexBuffer() {
     vao->AddBuffer(*vertexBuffer, *layout);
 }
 
-void Ocean::SetShowBorder(bool show) {
+void OceanFFT::SetShowBorder(bool show) {
     showBorder = show;
     shader->Bind();
     shader->SetUniform1f("showBorder", show);
 }
 
-void Ocean::SetChoppyWavesLambda(float lambda) {
+void OceanFFT::SetChoppyWavesLambda(float lambda) {
     choppyWavesLambda = lambda;
 
     shader->Bind();
     shader->SetUniform1f("lambda", lambda);
 }
 
-void Ocean::SetTimeScale(float timeScale_) {
+void OceanFFT::SetTimeScale(float timeScale_) {
     this->timeScale = timeScale_;
 }
 
-void Ocean::SetOceanScale(float oceanScale) {
+void OceanFFT::SetOceanScale(float oceanScale) {
     this->oceanScale = oceanScale;
 }
