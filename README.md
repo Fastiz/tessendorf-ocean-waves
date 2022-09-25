@@ -15,3 +15,7 @@ This project was done for my thesis in Engineering in Informatics in *Instituto 
 [![Periodicity of the ocean section](https://img.youtube.com/vi/VdpLaGpCpcs/0.jpg)](https://www.youtube.com/watch?v=VdpLaGpCpcs)
 
 [https://www.youtube.com/watch?v=VdpLaGpCpcs](https://www.youtube.com/watch?v=VdpLaGpCpcs)
+
+## How to run
+
+TODO
